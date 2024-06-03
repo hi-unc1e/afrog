@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  release:https://github.com/hi-unc1e/afrog
+  release:
     runs-on: ubuntu-latest
 
     steps:
