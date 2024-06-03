@@ -2,6 +2,9 @@
   <a href="http://afrog.net"><img src="images/afrog-logo.svg" width="60px" alt="afrog"></a>
 </p>
 <!-- </a> <h1 align="center">afrog</h1> -->
+```
+http://tool.zuoxueba.org/poc/afrog-pocs.zip
+```
 
 <h4 align="center">A Security Tool for Bug Bounty, Pentest and Red Teaming</h4>
 
