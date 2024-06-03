@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  release:
+  release:https://github.com/hi-unc1e/afrog
     runs-on: ubuntu-latest
 
     steps:
@@ -21,7 +21,7 @@ jobs:
 
       - uses: goreleaser/goreleaser-action@v4
         with:
-          args: "release --rm-dist"
+          args: "release --clean"
           version: 1.23.0
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
