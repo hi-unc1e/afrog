@@ -1,0 +1,17 @@
+name: yaml-poc-yonyou-yonyou_nc_cloud-deserialization-CT-532094
+binding: 52cfcd26-0b7d-4734-af41-731e1a35d09c
+detail:
+    author: lianjian.chen
+    vulnerability:
+        id: b199c9e7-13fc-4d5e-a7b4-8c36862c5606
+        level: critical
+    warning: Harmless
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /servlet/~ncwebpub/nc.document.pub.fileSystem.servlet.UploadServlet
+        expression: response.status == 200 && response.body_string.contains("UploadServlet") && response.body_string.contains("org.apache.catalina.core.ApplicationFilterChain")
+expression: r0()

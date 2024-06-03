@@ -1,0 +1,19 @@
+name: yaml-poc-yonyou-yonyou_nc-deserialization-CT-532073
+binding: 9564e722-c7d0-412e-9d45-01035eb95224
+detail:
+    author: lianjian.chen
+    links:
+        - https://security.yonyou.com/#/noticeInfo?id=293
+    vulnerability:
+        id: 591a76df-7c85-4ed7-8f63-5be7548b3bb3
+        level: critical
+    warning: Harmless
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /servlet/~baseapp/nc.message.bs.NCMessageServlet
+        expression: response.status == 200 && response.body_string.contains("NCMessageServlet") && response.body_string.contains("org.apache.catalina.core.ApplicationFilterChain")
+expression: r0()

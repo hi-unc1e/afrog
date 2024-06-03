@@ -1,0 +1,17 @@
+name: yaml-poc-apache-flink-unauthorized_access-CT-158146
+binding: e52cd0fb-2fcc-4403-96bf-2e71de5a685c
+detail:
+    author: system_user
+    vulnerability:
+        id: 9e0bc9fb-ed07-4267-9225-0b0c681b2b01
+        level: high
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /
+            follow_redirects: true
+        expression: response.status == 200 && response.body.bcontains(b"Apache Flink Web Dashboard")
+expression: r0()

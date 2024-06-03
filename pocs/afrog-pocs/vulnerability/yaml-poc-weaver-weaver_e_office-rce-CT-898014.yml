@@ -1,0 +1,18 @@
+name: yaml-poc-weaver-weaver_e_office-rce-CT-898014
+binding: a61b60c5-31b2-4202-892e-393a7baaa82e
+detail:
+    author: xiao.xiao
+    vulnerability:
+        id: de280d34-2a28-436e-9446-c785a5f99422
+        level: critical
+    warning: Harmless
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /eoffice10/server/public/api/welink/welink-move
+            follow_redirects: false
+        expression: response.status == 200 && response.raw.bcontains(b"{\"code\":\"0x000013\",\"message\":\"api\\u9519\\u8bef\"}")
+expression: r0()

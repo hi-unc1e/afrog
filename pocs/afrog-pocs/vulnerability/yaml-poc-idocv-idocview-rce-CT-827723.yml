@@ -1,0 +1,20 @@
+name: yaml-poc-idocv-idocview-rce-CT-827723
+binding: d7e276e5-9e32-4294-822a-9bd58930c2f4
+detail:
+    author: yang.lei
+    vulnerability:
+        id: d7bb33fc-d7e0-4a26-855b-fccffb054cc3
+        level: critical
+    warning: Harmless
+transport: http
+set:
+    filename: randomLowercase(8)
+    filename_md5: md5(filename)
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /html/2word?url={{filename}}
+        expression: response.status == 200 && response.headers['Content-Disposition'].contains(filename_md5)
+expression: r0()

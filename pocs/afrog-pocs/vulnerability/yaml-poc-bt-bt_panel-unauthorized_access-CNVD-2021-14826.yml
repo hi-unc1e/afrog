@@ -1,0 +1,18 @@
+name: yaml-poc-bt-bt_panel-unauthorized_access-CNVD-2021-14826
+binding: 46465016-d494-4c5d-951e-164462fe539c
+manual: false
+detail:
+    author: system_user
+    vulnerability:
+        id: 2f48ccb1-f162-41cf-99a3-7f3d5ca2e2bc
+        level: high
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /pma/
+            follow_redirects: false
+        expression: response.status == 200 && response.body.bcontains(b"information_schema") && response.body.bcontains(b"phpMyAdmin") && response.body.bcontains(b"server_sql.php")
+expression: r0()

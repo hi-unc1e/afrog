@@ -1,0 +1,20 @@
+name: yaml-poc-wanhusoft-ezoffice-file_upload-CT-456739
+binding: 8e78f4bd-c71c-4c41-a712-24022381b092
+detail:
+    author: system_user
+    links:
+        - https://www.whir.net/
+    vulnerability:
+        id: 4eadf3d9-d6f8-4639-9a5e-3b90a60dae98
+        level: critical
+    warning: Harmless
+transport: http
+rules:
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /defaultroot/officeserverservlet
+            follow_redirects: false
+        expression: response.status == 200 && "DBSTEP\\s+[v|V]3.0\\s+\\d+\\s+\\d+(.*)".bmatches(response.body)
+expression: r1()

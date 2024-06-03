@@ -1,0 +1,16 @@
+name: yaml-poc-djangoproject-django-unsafe_config-CT-157837
+binding: d9a049d6-600d-4df7-896f-61a845fff7dc
+detail:
+    author: system_user
+    vulnerability:
+        id: a19981d5-c1bf-420d-83a2-ee3edeaf5d0b
+        level: medium
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /admin/iYH6Zjxq7GlLA
+        expression: response.body.bcontains(b"seeing this error because you have <code>DEBUG = True</code") && response.body.bcontains(b"your Django settings file")
+expression: r0()

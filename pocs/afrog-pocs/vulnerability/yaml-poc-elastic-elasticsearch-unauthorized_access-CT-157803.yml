@@ -1,0 +1,22 @@
+name: yaml-poc-elastic-elasticsearch-unauthorized_access-CT-157803
+binding: a3ea37bb-95ea-48fe-8e5b-e23fdce32bdf
+detail:
+    author: system_user
+    vulnerability:
+        id: 1614ac6e-f30f-4735-9d68-4daae27830c7
+        level: high
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /
+        expression: response.status == 200 && response.content_type.icontains("json") && response.body.bcontains(b"You Know, for Search")
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /_count
+        expression: response.status == 200 && response.content_type.icontains("json") && "\"count\":\\d+".bmatches(response.body)
+expression: r0() && r1()

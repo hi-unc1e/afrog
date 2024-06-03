@@ -1,0 +1,16 @@
+name: yaml-poc-apache-spark-unauthorized_access-CT-158705
+binding: e2240682-9ee7-4567-b810-8d7197120dc6
+detail:
+    author: system_user
+    vulnerability:
+        id: b40aca26-743e-4316-ac11-6419ea62bcd2
+        level: high
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /v1/submissions
+        expression: response.status == 400 && response.body.bcontains(b"Missing an action") && response.body.bcontains(b"serverSparkVersion")
+expression: r0()

